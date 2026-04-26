@@ -157,7 +157,10 @@ class _ProfileViewState extends State<ProfileView> {
               _buildTextField(_profileAadharController, 'Aadhar Number'),
               _buildTextField(_profilePanCardController, 'PAN Card Number'),
               _buildStatusDropdown(),
-              _buildTextField(_profilePasswordController, 'New Password (optional)'),
+              _buildTextField(
+                _profilePasswordController,
+                'New Password (optional)',
+              ),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _handleProfileUpdate,
@@ -172,7 +175,10 @@ class _ProfileViewState extends State<ProfileView> {
               _buildReadOnlyField('Address', profile.address),
               _buildReadOnlyField('DOB', profile.dob),
               _buildReadOnlyField('Blood Group', profile.bloodGroup),
-              _buildReadOnlyField('Emergency Contact', profile.emergencyContact),
+              _buildReadOnlyField(
+                'Emergency Contact',
+                profile.emergencyContact,
+              ),
               _buildReadOnlyField('Aadhar', profile.aadharNumber),
               _buildReadOnlyField('PAN', profile.panCardNumber),
               _buildReadOnlyField('Status', profile.status),
@@ -230,7 +236,9 @@ class _ProfileViewState extends State<ProfileView> {
         children: [
           Text(
             label,
-            style: AppTheme.labelMedium.copyWith(color: AppTheme.onSurfaceVariant),
+            style: AppTheme.labelMedium.copyWith(
+              color: AppTheme.onSurfaceVariant,
+            ),
           ),
           const SizedBox(height: 4),
           Text(

@@ -29,10 +29,7 @@ class DioSetup {
         error: true,
         compact: true,
         maxWidth: 90,
-        logPrint: (object) => dev.log(
-          object.toString(),
-          name: 'API_LOG',
-        ),
+        logPrint: (object) => dev.log(object.toString(), name: 'API_LOG'),
       ),
     );
 
@@ -48,11 +45,7 @@ class DioSetup {
         },
         onError: (DioException e, handler) {
           final errorMessage = _handleError(e);
-          dev.log(
-            'API_ERROR: $errorMessage',
-            name: 'API_ERROR',
-            error: e,
-          );
+          dev.log('API_ERROR: $errorMessage', name: 'API_ERROR', error: e);
           return handler.next(e);
         },
       ),

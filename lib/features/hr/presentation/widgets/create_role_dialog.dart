@@ -8,12 +8,10 @@ class CreateRoleDialog extends StatefulWidget {
     required String roleName,
     required String activity,
     required String status,
-  }) onCreateRole;
+  })
+  onCreateRole;
 
-  const CreateRoleDialog({
-    super.key,
-    required this.onCreateRole,
-  });
+  const CreateRoleDialog({super.key, required this.onCreateRole});
 
   @override
   State<CreateRoleDialog> createState() => _CreateRoleDialogState();
@@ -50,7 +48,7 @@ class _CreateRoleDialogState extends State<CreateRoleDialog> {
   void _handleCreate() {
     final roleIdStr = _roleIdController.text.trim();
     final roleId = int.tryParse(roleIdStr);
-    
+
     if (roleId == null || _roleNameController.text.trim().isEmpty) {
       CustomSnackbar.showError(
         context,
@@ -108,10 +106,7 @@ class _CreateRoleDialogState extends State<CreateRoleDialog> {
           onPressed: () => Navigator.of(context).pop(),
           child: const Text('Cancel'),
         ),
-        ElevatedButton(
-          onPressed: _handleCreate,
-          child: const Text('Create'),
-        ),
+        ElevatedButton(onPressed: _handleCreate, child: const Text('Create')),
       ],
     );
   }

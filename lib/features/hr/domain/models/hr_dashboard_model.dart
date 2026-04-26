@@ -3,10 +3,7 @@ class HrDashboardModel {
   final int totalRoles;
   final int totalEmployees;
 
-  HrDashboardModel({
-    required this.totalRoles,
-    required this.totalEmployees,
-  });
+  HrDashboardModel({required this.totalRoles, required this.totalEmployees});
 
   factory HrDashboardModel.fromJson(Map<String, dynamic> json) {
     return HrDashboardModel(
@@ -16,16 +13,10 @@ class HrDashboardModel {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'totalRoles': totalRoles,
-      'totalEmployees': totalEmployees,
-    };
+    return {'totalRoles': totalRoles, 'totalEmployees': totalEmployees};
   }
 
-  HrDashboardModel copyWith({
-    int? totalRoles,
-    int? totalEmployees,
-  }) {
+  HrDashboardModel copyWith({int? totalRoles, int? totalEmployees}) {
     return HrDashboardModel(
       totalRoles: totalRoles ?? this.totalRoles,
       totalEmployees: totalEmployees ?? this.totalEmployees,

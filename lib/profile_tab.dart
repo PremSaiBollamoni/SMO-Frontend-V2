@@ -66,19 +66,27 @@ class _ProfileTabState extends State<ProfileTab> {
         empName: _nameCtrl.text.trim(),
         email: _emailCtrl.text.trim(),
         phone: _phoneCtrl.text.trim().isEmpty ? null : _phoneCtrl.text.trim(),
-        address: _addressCtrl.text.trim().isEmpty ? null : _addressCtrl.text.trim(),
+        address: _addressCtrl.text.trim().isEmpty
+            ? null
+            : _addressCtrl.text.trim(),
         dob: _dobCtrl.text.trim().isEmpty ? null : _dobCtrl.text.trim(),
-        bloodGroup: _bloodCtrl.text.trim().isEmpty ? null : _bloodCtrl.text.trim(),
-        emergencyContact: _emergencyCtrl.text.trim().isEmpty ? null : _emergencyCtrl.text.trim(),
+        bloodGroup: _bloodCtrl.text.trim().isEmpty
+            ? null
+            : _bloodCtrl.text.trim(),
+        emergencyContact: _emergencyCtrl.text.trim().isEmpty
+            ? null
+            : _emergencyCtrl.text.trim(),
         aadharNumber: null,
         panCardNumber: null,
         status: _profile?.status ?? 'ACTIVE',
-        password: _passwordCtrl.text.trim().isEmpty ? null : _passwordCtrl.text.trim(),
+        password: _passwordCtrl.text.trim().isEmpty
+            ? null
+            : _passwordCtrl.text.trim(),
       );
       final res = await ApiClient().dio.put(
-            '/api/hr/profile/${widget.empId}',
-            data: body.toJson(),
-          );
+        '/api/hr/profile/${widget.empId}',
+        data: body.toJson(),
+      );
       if (!mounted) return;
       if (res.statusCode == 200) {
         _passwordCtrl.clear();
@@ -93,14 +101,15 @@ class _ProfileTabState extends State<ProfileTab> {
     }
   }
 
-  void _showError(String msg) =>
-      CustomSnackbar.showError(context, msg);
+  void _showError(String msg) => CustomSnackbar.showError(context, msg);
 
   String _extractDioError(Object e) {
     if (e is DioException) {
       final data = e.response?.data;
       if (data is Map) {
-        return data['message']?.toString() ?? data['error']?.toString() ?? 'API Error';
+        return data['message']?.toString() ??
+            data['error']?.toString() ??
+            'API Error';
       }
       if (data is String && data.isNotEmpty) return data;
       return e.message ?? 'Unknown network error';
@@ -120,17 +129,18 @@ class _ProfileTabState extends State<ProfileTab> {
             : AppTheme.surfaceVariant.withValues(alpha: 0.45),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: dark
-              ? AppTheme.darkSurfaceVariant
-              : AppTheme.surfaceVariant,
+          color: dark ? AppTheme.darkSurfaceVariant : AppTheme.surfaceVariant,
         ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label,
-              style: AppTheme.labelMedium
-                  .copyWith(color: AppTheme.onSurfaceVariant)),
+          Text(
+            label,
+            style: AppTheme.labelMedium.copyWith(
+              color: AppTheme.onSurfaceVariant,
+            ),
+          ),
           const SizedBox(height: 4),
           Text(
             value.trim().isEmpty ? '-' : value,
@@ -144,8 +154,11 @@ class _ProfileTabState extends State<ProfileTab> {
     );
   }
 
-  Widget _editField(TextEditingController ctrl, String label,
-      {bool obscure = false}) {
+  Widget _editField(
+    TextEditingController ctrl,
+    String label, {
+    bool obscure = false,
+  }) {
     final dark = Theme.of(context).brightness == Brightness.dark;
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
@@ -203,30 +216,36 @@ class _ProfileTabState extends State<ProfileTab> {
                       children: [
                         Text(
                           p?.empName ?? '-',
-                          style: AppTheme.titleLarge
-                              .copyWith(fontWeight: FontWeight.w700),
+                          style: AppTheme.titleLarge.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                         const SizedBox(height: 2),
                         Text(
                           '${p?.role.roleName ?? '-'} • ID ${widget.empId}',
-                          style: AppTheme.bodySmall
-                              .copyWith(color: AppTheme.onSurfaceVariant),
+                          style: AppTheme.bodySmall.copyWith(
+                            color: AppTheme.onSurfaceVariant,
+                          ),
                         ),
                         const SizedBox(height: 6),
                         Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 4),
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
                           decoration: BoxDecoration(
-                            color: (p?.status == 'ACTIVE'
-                                    ? AppTheme.success
-                                    : AppTheme.warning)
-                                .withValues(alpha: 0.12),
+                            color:
+                                (p?.status == 'ACTIVE'
+                                        ? AppTheme.success
+                                        : AppTheme.warning)
+                                    .withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(
-                              color: (p?.status == 'ACTIVE'
-                                      ? AppTheme.success
-                                      : AppTheme.warning)
-                                  .withValues(alpha: 0.4),
+                              color:
+                                  (p?.status == 'ACTIVE'
+                                          ? AppTheme.success
+                                          : AppTheme.warning)
+                                      .withValues(alpha: 0.4),
                             ),
                           ),
                           child: Text(
@@ -247,8 +266,9 @@ class _ProfileTabState extends State<ProfileTab> {
                       tooltip: 'Edit Profile',
                       onPressed: () => setState(() => _editMode = true),
                       style: IconButton.styleFrom(
-                        backgroundColor:
-                            AppTheme.primary.withValues(alpha: 0.1),
+                        backgroundColor: AppTheme.primary.withValues(
+                          alpha: 0.1,
+                        ),
                         foregroundColor: AppTheme.primary,
                       ),
                       icon: const Icon(Icons.edit_outlined),
@@ -304,8 +324,11 @@ class _ProfileTabState extends State<ProfileTab> {
                     _editField(_dobCtrl, 'Date of Birth (YYYY-MM-DD)'),
                     _editField(_bloodCtrl, 'Blood Group'),
                     _editField(_emergencyCtrl, 'Emergency Contact'),
-                    _editField(_passwordCtrl, 'New Password (leave blank to keep)',
-                        obscure: true),
+                    _editField(
+                      _passwordCtrl,
+                      'New Password (leave blank to keep)',
+                      obscure: true,
+                    ),
                     const SizedBox(height: 4),
                     Row(
                       children: [
@@ -330,16 +353,17 @@ class _ProfileTabState extends State<ProfileTab> {
                             onPressed: _saving ? null : _saveProfile,
                             style: AppTheme.primaryButtonStyle,
                             child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 14),
+                              padding: const EdgeInsets.symmetric(vertical: 14),
                               child: _saving
                                   ? const CircularProgressIndicator(
-                                      color: AppTheme.onPrimary)
+                                      color: AppTheme.onPrimary,
+                                    )
                                   : Text(
                                       'Save',
                                       style: AppTheme.labelLarge.copyWith(
-                                          color: AppTheme.onPrimary,
-                                          fontWeight: FontWeight.bold),
+                                        color: AppTheme.onPrimary,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                             ),
                           ),

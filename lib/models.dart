@@ -13,11 +13,13 @@ class RoleResponse {
   final String role;
   final String employeeName;
   final String empId;
+  final String activities;
 
   RoleResponse({
     required this.role,
     required this.employeeName,
     required this.empId,
+    this.activities = '',
   });
 
   factory RoleResponse.fromJson(Map<String, dynamic> json) {
@@ -25,6 +27,7 @@ class RoleResponse {
       role: (json['role'] ?? '').toString(),
       employeeName: (json['employeeName'] ?? '').toString(),
       empId: (json['empId'] ?? '').toString(),
+      activities: (json['activities'] ?? '').toString(),
     );
   }
 }
@@ -186,11 +189,7 @@ class CreateLoginRequest {
   });
 
   Map<String, dynamic> toJson() {
-    return {
-      'empId': empId,
-      'password': password,
-      'status': status,
-    };
+    return {'empId': empId, 'password': password, 'status': status};
   }
 }
 

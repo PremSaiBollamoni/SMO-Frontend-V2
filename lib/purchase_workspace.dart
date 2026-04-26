@@ -170,9 +170,9 @@ class _PurchaseWorkspaceState extends State<PurchaseWorkspace> {
     setState(() => _isSubmitting = true);
     try {
       final res = await ApiClient().dio.post(
-            '/api/purchase/vendors',
-            data: body,
-          );
+        '/api/purchase/vendors',
+        data: body,
+      );
 
       if (!mounted) return;
 
@@ -210,9 +210,9 @@ class _PurchaseWorkspaceState extends State<PurchaseWorkspace> {
     setState(() => _isSubmitting = true);
     try {
       final res = await ApiClient().dio.patch(
-            '/api/purchase/vendors/$vendorId/status',
-            queryParameters: {'status': _selectedVendorStatus},
-          );
+        '/api/purchase/vendors/$vendorId/status',
+        queryParameters: {'status': _selectedVendorStatus},
+      );
 
       if (!mounted) return;
 
@@ -254,9 +254,9 @@ class _PurchaseWorkspaceState extends State<PurchaseWorkspace> {
     setState(() => _isSubmitting = true);
     try {
       final res = await ApiClient().dio.post(
-            '/api/purchase/purchase-orders',
-            data: body,
-          );
+        '/api/purchase/purchase-orders',
+        data: body,
+      );
 
       if (!mounted) return;
 

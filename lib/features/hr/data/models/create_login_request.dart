@@ -11,10 +11,6 @@ class CreateLoginRequest {
   });
 
   Map<String, dynamic> toJson() {
-    return {
-      'empId': empId,
-      'password': password,
-      'status': status,
-    };
+    return {'empId': empId, 'password': password, 'status': status};
   }
 }

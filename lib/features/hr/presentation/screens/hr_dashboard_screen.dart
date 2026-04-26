@@ -25,15 +25,35 @@ class HrDashboardScreen extends StatefulWidget {
   State<HrDashboardScreen> createState() => _HrDashboardScreenState();
 }
 
-class _HrDashboardScreenState extends State<HrDashboardScreen> {
+class _HrDashboardScreenState extends State<HrDashboardScreen>
+    with SingleTickerProviderStateMixin {
   final HrController _controller = Get.put(HrController());
   int _selectedMenu = 0;
   bool _isSidebarVisible = false; // Start with sidebar closed
+  late AnimationController _sidebarAnimationController;
+  late Animation<Offset> _sidebarSlideAnimation;
 
   @override
   void initState() {
     super.initState();
+    _sidebarAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+    _sidebarSlideAnimation =
+        Tween<Offset>(begin: const Offset(-1, 0), end: Offset.zero).animate(
+          CurvedAnimation(
+            parent: _sidebarAnimationController,
+            curve: Curves.easeInOut,
+          ),
+        );
     _loadSessionAndData();
+  }
+
+  @override
+  void dispose() {
+    _sidebarAnimationController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadSessionAndData() async {
@@ -48,10 +68,10 @@ class _HrDashboardScreenState extends State<HrDashboardScreen> {
 
       // Initialize API client with employee ID
       ApiClient().setEmpId(empId);
-      
+
       _controller.initialize(empId, employeeName);
       await _controller.refreshAll();
-      
+
       debugPrint('=== Session Loaded Successfully ===');
     } catch (e) {
       debugPrint('=== Session Load Error ===');
@@ -103,13 +123,21 @@ class _HrDashboardScreenState extends State<HrDashboardScreen> {
             const SizedBox(height: 6),
             Text('DOB: ${profile.dob.isEmpty ? '-' : profile.dob}'),
             const SizedBox(height: 6),
-            Text('Blood Group: ${profile.bloodGroup.isEmpty ? '-' : profile.bloodGroup}'),
+            Text(
+              'Blood Group: ${profile.bloodGroup.isEmpty ? '-' : profile.bloodGroup}',
+            ),
             const SizedBox(height: 6),
-            Text('Emergency Contact: ${profile.emergencyContact.isEmpty ? '-' : profile.emergencyContact}'),
+            Text(
+              'Emergency Contact: ${profile.emergencyContact.isEmpty ? '-' : profile.emergencyContact}',
+            ),
             const SizedBox(height: 6),
-            Text('Aadhar: ${profile.aadharNumber.isEmpty ? '-' : profile.aadharNumber}'),
+            Text(
+              'Aadhar: ${profile.aadharNumber.isEmpty ? '-' : profile.aadharNumber}',
+            ),
             const SizedBox(height: 6),
-            Text('PAN: ${profile.panCardNumber.isEmpty ? '-' : profile.panCardNumber}'),
+            Text(
+              'PAN: ${profile.panCardNumber.isEmpty ? '-' : profile.panCardNumber}',
+            ),
             const SizedBox(height: 6),
             Text('Status: ${profile.status}'),
           ],
@@ -143,33 +171,34 @@ class _HrDashboardScreenState extends State<HrDashboardScreen> {
     await showDialog<void>(
       context: context,
       builder: (context) => CreateRoleDialog(
-        onCreateRole: ({
-          required int roleId,
-          required String roleName,
-          required String activity,
-          required String status,
-        }) async {
-          final success = await _controller.createRole(
-            roleId: roleId,
-            roleName: roleName,
-            activity: activity,
-            status: status,
-          );
+        onCreateRole:
+            ({
+              required int roleId,
+              required String roleName,
+              required String activity,
+              required String status,
+            }) async {
+              final success = await _controller.createRole(
+                roleId: roleId,
+                roleName: roleName,
+                activity: activity,
+                status: status,
+              );
 
-          if (!mounted) return;
-          if (success) {
-            CustomSnackbar.showSuccess(context, 'Role created');
-          } else {
-            CustomSnackbar.showError(context, 'Role creation failed');
-          }
-        },
+              if (!mounted) return;
+              if (success) {
+                CustomSnackbar.showSuccess(context, 'Role created');
+              } else {
+                CustomSnackbar.showError(context, 'Role creation failed');
+              }
+            },
       ),
     );
   }
 
   Future<void> _showCreateEmployeeDialog() async {
     final roles = _controller.roles.toList();
-    
+
     if (roles.isEmpty) {
       CustomSnackbar.showError(context, 'Create at least one role first');
       return;
@@ -179,63 +208,64 @@ class _HrDashboardScreenState extends State<HrDashboardScreen> {
       context: context,
       builder: (context) => CreateEmployeeDialog(
         roles: roles,
-        onCreateEmployee: ({
-          required String empId,
-          required String empName,
-          required role,
-          dob,
-          phone,
-          address,
-          required String email,
-          salary,
-          empDate,
-          bloodGroup,
-          emergencyContact,
-          aadharNumber,
-          panCardNumber,
-          required String password,
-        }) async {
-          try {
-            debugPrint('=== Creating Employee ===');
-            debugPrint('EmpId: $empId');
-            debugPrint('Name: $empName');
-            debugPrint('Role: ${role.roleName}');
-            debugPrint('Email: $email');
-            debugPrint('EmpDate: $empDate');
-            
-            final result = await _controller.createEmployee(
-              empId: empId,
-              empName: empName,
-              role: role,
-              dob: dob,
-              phone: phone,
-              address: address,
-              email: email,
-              salary: salary,
-              empDate: empDate,
-              bloodGroup: bloodGroup,
-              emergencyContact: emergencyContact,
-              aadharNumber: aadharNumber,
-              panCardNumber: panCardNumber,
-              password: password,
-            );
+        onCreateEmployee:
+            ({
+              required String empId,
+              required String empName,
+              required role,
+              dob,
+              phone,
+              address,
+              required String email,
+              salary,
+              empDate,
+              bloodGroup,
+              emergencyContact,
+              aadharNumber,
+              panCardNumber,
+              required String password,
+            }) async {
+              try {
+                debugPrint('=== Creating Employee ===');
+                debugPrint('EmpId: $empId');
+                debugPrint('Name: $empName');
+                debugPrint('Role: ${role.roleName}');
+                debugPrint('Email: $email');
+                debugPrint('EmpDate: $empDate');
 
-            debugPrint('=== Employee Creation Result ===');
-            debugPrint('Result: $result');
+                final result = await _controller.createEmployee(
+                  empId: empId,
+                  empName: empName,
+                  role: role,
+                  dob: dob,
+                  phone: phone,
+                  address: address,
+                  email: email,
+                  salary: salary,
+                  empDate: empDate,
+                  bloodGroup: bloodGroup,
+                  emergencyContact: emergencyContact,
+                  aadharNumber: aadharNumber,
+                  panCardNumber: panCardNumber,
+                  password: password,
+                );
 
-            return result;
-          } catch (e) {
-            debugPrint('=== Employee Creation Error ===');
-            debugPrint('Error: $e');
-            rethrow;
-          }
-        },
+                debugPrint('=== Employee Creation Result ===');
+                debugPrint('Result: $result');
+
+                return result;
+              } catch (e) {
+                debugPrint('=== Employee Creation Error ===');
+                debugPrint('Error: $e');
+                rethrow;
+              }
+            },
       ),
     );
 
     // Show snackbar after dialog is closed
     if (!mounted) return;
-    
+
     if (result != null) {
       final createdEmpId = result['empId'];
       CustomSnackbar.showSuccess(
@@ -259,26 +289,50 @@ class _HrDashboardScreenState extends State<HrDashboardScreen> {
                 // Top bar (no action buttons)
                 HrTopBar(
                   isSidebarVisible: _isSidebarVisible,
-                  onToggleSidebar: () => setState(() => _isSidebarVisible = !_isSidebarVisible),
+                  onToggleSidebar: () {
+                    setState(() => _isSidebarVisible = !_isSidebarVisible);
+                    if (_isSidebarVisible) {
+                      _sidebarAnimationController.forward();
+                    } else {
+                      _sidebarAnimationController.reverse();
+                    }
+                  },
                   pageTitle: _getPageTitle(),
                 ),
                 // Content
-                Expanded(
-                  child: _buildContent(),
-                ),
+                Expanded(child: _buildContent()),
               ],
             ),
-            // Sidebar overlay
+            // Tap-outside overlay to close sidebar
+            if (_isSidebarVisible)
+              Positioned(
+                left: 250, // Width of sidebar
+                top: 0,
+                right: 0,
+                bottom: 0,
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() => _isSidebarVisible = false);
+                    _sidebarAnimationController.reverse();
+                  },
+                  child: Container(color: Colors.transparent),
+                ),
+              ),
+            // Sidebar overlay with animation
             if (_isSidebarVisible)
               Positioned(
                 left: 0,
                 top: 0,
                 bottom: 0,
-                child: HrSidebar(
-                  selectedMenu: _selectedMenu,
-                  onMenuSelected: (index) => setState(() => _selectedMenu = index),
-                  onLogout: _logout,
-                  isVisible: _isSidebarVisible,
+                child: SlideTransition(
+                  position: _sidebarSlideAnimation,
+                  child: HrSidebar(
+                    selectedMenu: _selectedMenu,
+                    onMenuSelected: (index) =>
+                        setState(() => _selectedMenu = index),
+                    onLogout: _logout,
+                    isVisible: _isSidebarVisible,
+                  ),
                 ),
               ),
           ],
@@ -287,7 +341,9 @@ class _HrDashboardScreenState extends State<HrDashboardScreen> {
       // Floating action button for Roles and Employees screens
       floatingActionButton: _selectedMenu == 1 || _selectedMenu == 2
           ? FloatingActionButton(
-              onPressed: _selectedMenu == 1 ? _showCreateRoleDialog : _showCreateEmployeeDialog,
+              onPressed: _selectedMenu == 1
+                  ? _showCreateRoleDialog
+                  : _showCreateEmployeeDialog,
               child: const Icon(Icons.add),
             )
           : null,

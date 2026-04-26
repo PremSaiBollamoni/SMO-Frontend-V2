@@ -20,7 +20,11 @@ class DashboardView extends StatelessWidget {
 
       final chartData = [
         _ChartData('Roles', dashboard.totalRoles.toDouble(), AppTheme.primary),
-        _ChartData('Employees', dashboard.totalEmployees.toDouble(), AppTheme.success),
+        _ChartData(
+          'Employees',
+          dashboard.totalEmployees.toDouble(),
+          AppTheme.success,
+        ),
       ];
 
       return LayoutBuilder(
@@ -32,11 +36,13 @@ class DashboardView extends StatelessWidget {
               children: [
                 Text('Dashboard Overview', style: AppTheme.headlineMedium),
                 const SizedBox(height: 32),
-                
+
                 // Statistics Chart
                 Card(
                   elevation: 2,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                   child: Padding(
                     padding: const EdgeInsets.all(24),
                     child: Column(
@@ -59,9 +65,12 @@ class DashboardView extends StatelessWidget {
                             series: <CartesianSeries>[
                               ColumnSeries<_ChartData, String>(
                                 dataSource: chartData,
-                                xValueMapper: (_ChartData data, _) => data.category,
-                                yValueMapper: (_ChartData data, _) => data.value,
-                                pointColorMapper: (_ChartData data, _) => data.color,
+                                xValueMapper: (_ChartData data, _) =>
+                                    data.category,
+                                yValueMapper: (_ChartData data, _) =>
+                                    data.value,
+                                pointColorMapper: (_ChartData data, _) =>
+                                    data.color,
                                 dataLabelSettings: const DataLabelSettings(
                                   isVisible: true,
                                   textStyle: TextStyle(
@@ -69,7 +78,9 @@ class DashboardView extends StatelessWidget {
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                                borderRadius: const BorderRadius.all(Radius.circular(8)),
+                                borderRadius: const BorderRadius.all(
+                                  Radius.circular(8),
+                                ),
                               ),
                             ],
                           ),
@@ -78,9 +89,9 @@ class DashboardView extends StatelessWidget {
                     ),
                   ),
                 ),
-                
+
                 const SizedBox(height: 24),
-                
+
                 // Summary Cards
                 Row(
                   children: [
@@ -111,7 +122,12 @@ class DashboardView extends StatelessWidget {
     });
   }
 
-  Widget _buildSummaryCard(String title, String value, IconData icon, Color color) {
+  Widget _buildSummaryCard(
+    String title,
+    String value,
+    IconData icon,
+    Color color,
+  ) {
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),

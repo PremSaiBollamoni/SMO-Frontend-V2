@@ -20,7 +20,8 @@ class CreateEmployeeDialog extends StatefulWidget {
     String? aadharNumber,
     String? panCardNumber,
     required String password,
-  }) onCreateEmployee;
+  })
+  onCreateEmployee;
 
   const CreateEmployeeDialog({
     super.key,
@@ -158,7 +159,7 @@ class _CreateEmployeeDialogState extends State<CreateEmployeeDialog> {
             : _empPanCardController.text.trim(),
         password: _empPasswordController.text.trim(),
       );
-      
+
       // Close dialog and return result
       if (mounted) {
         Navigator.of(context).pop(result);
@@ -244,8 +245,8 @@ class _CreateEmployeeDialogState extends State<CreateEmployeeDialog> {
                             _newEmployeeRoleId = value;
                           });
                         },
-                        decoration: Theme.of(context).brightness ==
-                                Brightness.dark
+                        decoration:
+                            Theme.of(context).brightness == Brightness.dark
                             ? AppTheme.darkInputDecoration('Role')
                             : AppTheme.inputDecoration('Role'),
                       ),

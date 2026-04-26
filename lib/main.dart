@@ -11,13 +11,14 @@ import 'core/theme/app_theme.dart';
 // Feature imports
 import 'login_screen.dart';
 import 'features/hr/presentation/screens/hr_dashboard_screen.dart';
-import 'operator_workspace.dart';
-import 'store_workspace.dart';
+import 'features/operator/presentation/screens/operator_screen.dart';
+import 'features/store/presentation/screens/store_screen.dart';
 import 'qc_workspace.dart';
 import 'purchase_workspace.dart';
-import 'floor_manager_workspace.dart';
+import 'features/supervisor/presentation/screens/supervisor_screen.dart';
 import 'gm_workspace.dart';
-import 'process_planner_workspace.dart';
+import 'features/process_planner/presentation/screens/process_planner_screen.dart';
+import 'access_denied_screen.dart';
 
 // Current app version — update this when releasing a new build
 const String kAppVersion = '1.0';
@@ -38,7 +39,6 @@ class _MyAppState extends State<MyApp> {
   bool _isLoading = true;
   String _connectionStatus = 'Checking server connection...';
   bool _connectionSuccess = false;
-  bool _isCheckingConnection = true;
   Widget? _home;
 
   @override
@@ -53,13 +53,13 @@ class _MyAppState extends State<MyApp> {
     debugPrint('Theme loaded');
     await _restoreSession();
     debugPrint('Session restored, home: ${_home?.runtimeType}');
-    
+
     // Start connection check but don't block on it
     _checkBackendConnection();
-    
+
     // Minimum splash screen display time (1.5 seconds)
     await Future.delayed(const Duration(milliseconds: 1500));
-    
+
     debugPrint('Setting isLoading to false');
     setState(() => _isLoading = false);
   }
@@ -78,27 +78,26 @@ class _MyAppState extends State<MyApp> {
         setState(() {
           _connectionStatus = 'Server is running';
           _connectionSuccess = true;
-          _isCheckingConnection = false;
         });
       } else {
         setState(() {
           _connectionStatus = 'Server returned error: ${res.statusCode}';
           _connectionSuccess = false;
-          _isCheckingConnection = false;
         });
       }
     } on DioException catch (e) {
       setState(() {
         _connectionSuccess = false;
-        _isCheckingConnection = false;
         switch (e.type) {
           case DioExceptionType.connectionTimeout:
           case DioExceptionType.sendTimeout:
           case DioExceptionType.receiveTimeout:
-            _connectionStatus = 'Server is waking up (Render free tier). Please wait...';
+            _connectionStatus =
+                'Server is waking up (Render free tier). Please wait...';
             break;
           case DioExceptionType.connectionError:
-            _connectionStatus = 'Cannot connect to server. Please check your network.';
+            _connectionStatus =
+                'Cannot connect to server. Please check your network.';
             break;
           case DioExceptionType.badResponse:
             _connectionStatus = 'Server error: ${e.response?.statusCode}';
@@ -114,7 +113,6 @@ class _MyAppState extends State<MyApp> {
       setState(() {
         _connectionStatus = 'Unexpected error: $e';
         _connectionSuccess = false;
-        _isCheckingConnection = false;
       });
     }
   }
@@ -132,64 +130,114 @@ class _MyAppState extends State<MyApp> {
     final role = (prefs.getString('ROLE') ?? '').toUpperCase().trim();
     final empId = prefs.getString('EMP_ID');
     final employeeName = prefs.getString('EMPLOYEE_NAME') ?? 'Employee';
+    final activities = prefs.getString('ACTIVITIES') ?? '';
 
     if (empId != null && empId.isNotEmpty && role.isNotEmpty) {
       ApiClient().setEmpId(empId);
-      _home = _buildHomeForRole(role, empId, employeeName);
+      _home = _buildHomeForRole(role, empId, employeeName, activities);
       return;
     }
     _home = LoginScreen(setDarkMode: setDarkMode);
   }
 
-  Widget _buildHomeForRole(String role, String empId, String employeeName) {
+  Widget _buildHomeForRole(
+    String role,
+    String empId,
+    String employeeName,
+    String activities,
+  ) {
+    // STRICT ACTIVITY-BASED ROUTING
+    // If no activities assigned, deny access
+    if (activities.isEmpty) {
+      return AccessDeniedScreen(
+        message: 'No activities assigned to your role.',
+        roleName: role,
+        activities: activities,
+        setDarkMode: setDarkMode,
+      );
+    }
+
+    final activityList = activities
+        .split(',')
+        .map((a) => a.trim().toUpperCase())
+        .toList();
+
+    // Check for specific activities and route accordingly
     // HR / Admin
-    if (role == 'HR' || role == 'ADMIN') {
+    if (activityList.contains('HR_DASHBOARD') ||
+        activityList.contains('ADMIN')) {
       return HrDashboardScreen(setDarkMode: setDarkMode);
     }
-    // Operator-type roles — all use OperatorWorkspace
-    if (role == 'OPERATOR' ||
-        role == 'CUTTER' ||
-        role == 'STITCHER' ||
-        role == 'IRONING' ||
-        role == 'PACKAGER') {
-      return OperatorWorkspace(
-          empId: empId, employeeName: employeeName, role: role);
+
+    // Operator roles
+    if (activityList.contains('OPERATOR_SCAN_BARCODE') ||
+        activityList.contains('OPERATOR_COMPLETE_OPERATION')) {
+      return OperatorScreen(
+        empId: empId,
+        employeeName: employeeName,
+        role: role,
+      );
     }
+
     // Store Manager
-    if (role == 'STORE MANAGER') {
-      return StoreWorkspace(
-          empId: empId, employeeName: employeeName, role: role);
+    if (activityList.contains('STORE_MANAGE_INVENTORY') ||
+        activityList.contains('STORE_RECEIVE_MATERIALS')) {
+      return StoreScreen(empId: empId, employeeName: employeeName, role: role);
     }
+
     // Purchase Manager
-    if (role == 'PURCHASE MANAGER') {
+    if (activityList.contains('PURCHASE_CREATE_PO') ||
+        activityList.contains('PURCHASE_MANAGE_SUPPLIERS')) {
       return PurchaseWorkspace(
-          empId: empId, employeeName: employeeName, role: role);
+        empId: empId,
+        employeeName: employeeName,
+        role: role,
+      );
     }
+
     // QC roles
-    if (role == 'QC ENGINEER' ||
-        role == 'QUALITY CONTROL ENGINEER' ||
-        role == 'QUALITY CONTROL MANAGER' ||
-        role == 'QC MANAGER') {
-      return QcWorkspace(
-          empId: empId, employeeName: employeeName, role: role);
+    if (activityList.contains('QC_INSPECT_QUALITY') ||
+        activityList.contains('QC_APPROVE_REJECT')) {
+      return QcWorkspace(empId: empId, employeeName: employeeName, role: role);
     }
-    // Floor Manager / Supervisor
-    if (role == 'FLOOR MANAGER' || role == 'SUPERVISOR') {
-      return FloorManagerWorkspace(
-          empId: empId, employeeName: employeeName, role: role);
+
+    // Supervisor
+    if (activityList.contains('SUPERVISOR_MONITOR_WIP') ||
+        activityList.contains('SUPERVISOR_LINE_BALANCING') ||
+        activityList.contains('SUPERVISOR_QR_ASSIGNMENT') ||
+        activityList.contains('SUPERVISOR_TRACKING') ||
+        activityList.contains('SUPERVISOR_MERGING')) {
+      return SupervisorScreen(
+        empId: empId,
+        employeeName: employeeName,
+        role: role,
+        activities: activityList,
+      );
     }
+
     // GM
-    if (role == 'GM') {
-      return GmWorkspace(
-          empId: empId, employeeName: employeeName, role: role);
+    if (activityList.contains('PP_APPROVE') ||
+        activityList.contains('PP_VIEW_ALL')) {
+      return GmWorkspace(empId: empId, employeeName: employeeName, role: role, activities: activityList);
     }
+
     // Process Planner
-    if (role == 'PROCESS PLANNER') {
-      return ProcessPlannerWorkspace(
-          empId: empId, employeeName: employeeName, role: role);
+    if (activityList.contains('PP_SUBMIT') ||
+        activityList.contains('PP_APPROVE')) {
+      return ProcessPlannerScreen(
+        empId: empId,
+        employeeName: employeeName,
+        role: role,
+      );
     }
-    // Fallback
-    return HrDashboardScreen(setDarkMode: setDarkMode);
+
+    // No matching activity found - deny access
+    return AccessDeniedScreen(
+      message: 'Your role does not have permission to access any screens.',
+      roleName: role,
+      activities: activities,
+      setDarkMode: setDarkMode,
+    );
   }
 
   void setDarkMode(bool isDarkMode) async {
@@ -253,23 +301,15 @@ class _MyAppState extends State<MyApp> {
                   const SizedBox(height: 8),
                   const Text(
                     'Sewing Machine Operations',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: AppTheme.onPrimary,
-                    ),
+                    style: TextStyle(fontSize: 16, color: AppTheme.onPrimary),
                   ),
                   const SizedBox(height: 48),
                   // Simple loading indicator
-                  const CircularProgressIndicator(
-                    color: AppTheme.onPrimary,
-                  ),
+                  const CircularProgressIndicator(color: AppTheme.onPrimary),
                   const SizedBox(height: 16),
                   const Text(
                     'Loading...',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: AppTheme.onPrimary,
-                    ),
+                    style: TextStyle(fontSize: 14, color: AppTheme.onPrimary),
                   ),
                 ],
               ),

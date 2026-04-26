@@ -49,21 +49,20 @@ class HrSidebar extends StatelessWidget {
                   child: Icon(Icons.person, size: 40, color: AppTheme.primary),
                 ),
                 const SizedBox(height: 12),
-                Obx(() => Text(
-                      controller.employeeName.value,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    )),
+                Obx(
+                  () => Text(
+                    controller.employeeName.value,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 4),
                 const Text(
                   'HR Manager',
-                  style: TextStyle(
-                    color: Colors.white70,
-                    fontSize: 14,
-                  ),
+                  style: TextStyle(color: Colors.white70, fontSize: 14),
                 ),
               ],
             ),
@@ -79,11 +78,7 @@ class HrSidebar extends StatelessWidget {
                   label: 'Dashboard',
                   index: 0,
                 ),
-                _buildSidebarItem(
-                  icon: Icons.work,
-                  label: 'Roles',
-                  index: 1,
-                ),
+                _buildSidebarItem(icon: Icons.work, label: 'Roles', index: 1),
                 _buildSidebarItem(
                   icon: Icons.people,
                   label: 'Employees',
@@ -101,10 +96,7 @@ class HrSidebar extends StatelessWidget {
           // Logout button
           ListTile(
             leading: const Icon(Icons.logout, color: Colors.white),
-            title: const Text(
-              'Logout',
-              style: TextStyle(color: Colors.white),
-            ),
+            title: const Text('Logout', style: TextStyle(color: Colors.white)),
             onTap: onLogout,
           ),
           const SizedBox(height: 8),
@@ -122,7 +114,9 @@ class HrSidebar extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
-        color: isSelected ? Colors.white.withValues(alpha: 0.2) : Colors.transparent,
+        color: isSelected
+            ? Colors.white.withValues(alpha: 0.2)
+            : Colors.transparent,
         borderRadius: BorderRadius.circular(8),
       ),
       child: ListTile(

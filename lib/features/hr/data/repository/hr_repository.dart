@@ -12,7 +12,7 @@ class HrRepository {
   final HrApiService _apiService;
 
   HrRepository({HrApiService? apiService})
-      : _apiService = apiService ?? HrApiService();
+    : _apiService = apiService ?? HrApiService();
 
   /// Fetch all roles
   Future<List<RoleModel>> getRoles(String actorEmpId) async {
@@ -34,9 +34,7 @@ class HrRepository {
 
   /// Get HR dashboard statistics
   /// Calculates from existing data (no dedicated backend endpoint)
-  Future<HrDashboardModel> getDashboard(
-    String actorEmpId,
-  ) async {
+  Future<HrDashboardModel> getDashboard(String actorEmpId) async {
     try {
       final roles = await getRoles(actorEmpId);
       final employees = await getEmployees(actorEmpId);
@@ -109,10 +107,7 @@ class HrRepository {
     required String empId,
     required String password,
   }) async {
-    final request = CreateLoginRequest(
-      empId: empId,
-      password: password,
-    );
+    final request = CreateLoginRequest(empId: empId, password: password);
     return await _apiService.createEmployeeLogin(request);
   }
 
@@ -159,10 +154,27 @@ class HrRepository {
     required String empId,
     required String password,
   }) async {
-    final request = CreateLoginRequest(
-      empId: empId,
-      password: password,
-    );
+    final request = CreateLoginRequest(empId: empId, password: password);
     return await _apiService.updateEmployeeLogin(empId, request);
+  }
+
+  /// Delete an employee
+  Future<void> deleteEmployee(String empId) async {
+    return await _apiService.deleteEmployee(empId);
+  }
+
+  /// Delete multiple employees
+  Future<void> deleteEmployees(List<String> empIds) async {
+    return await _apiService.deleteEmployees(empIds);
+  }
+
+  /// Delete a role
+  Future<void> deleteRole(int roleId) async {
+    return await _apiService.deleteRole(roleId);
+  }
+
+  /// Delete multiple roles
+  Future<void> deleteRoles(List<int> roleIds) async {
+    return await _apiService.deleteRoles(roleIds);
   }
 }

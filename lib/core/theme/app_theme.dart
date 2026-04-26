@@ -140,13 +140,8 @@ class AppTheme {
     foregroundColor: onPrimary,
     elevation: 2,
     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(12),
-    ),
-    textStyle: const TextStyle(
-      fontWeight: FontWeight.w600,
-      fontSize: 16,
-    ),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    textStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
     shadowColor: primary.withValues(alpha: 0.3),
     surfaceTintColor: primary,
   );
@@ -156,13 +151,8 @@ class AppTheme {
     foregroundColor: onSecondary,
     elevation: 2,
     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(12),
-    ),
-    textStyle: const TextStyle(
-      fontWeight: FontWeight.w600,
-      fontSize: 16,
-    ),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    textStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
     shadowColor: secondary.withValues(alpha: 0.3),
     surfaceTintColor: secondary,
   );
@@ -172,13 +162,8 @@ class AppTheme {
     foregroundColor: onSurface,
     elevation: 2,
     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(12),
-    ),
-    textStyle: const TextStyle(
-      fontWeight: FontWeight.w600,
-      fontSize: 16,
-    ),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    textStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
     shadowColor: tertiary.withValues(alpha: 0.3),
     surfaceTintColor: tertiary,
   );
@@ -187,21 +172,13 @@ class AppTheme {
     foregroundColor: primary,
     side: const BorderSide(color: primary, width: 2),
     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(12),
-    ),
-    textStyle: const TextStyle(
-      fontWeight: FontWeight.w600,
-      fontSize: 16,
-    ),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    textStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
   );
 
   static final ButtonStyle textButtonStyle = TextButton.styleFrom(
     foregroundColor: primary,
-    textStyle: const TextStyle(
-      fontWeight: FontWeight.w600,
-      fontSize: 16,
-    ),
+    textStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
   );
 
   // Enhanced input decoration with modern styling
@@ -242,10 +219,7 @@ class AppTheme {
   static InputDecoration darkInputDecoration(String label) {
     return InputDecoration(
       labelText: label,
-      labelStyle: const TextStyle(
-        color: primary,
-        fontWeight: FontWeight.w500,
-      ),
+      labelStyle: const TextStyle(color: primary, fontWeight: FontWeight.w500),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: const BorderSide(color: darkSurfaceVariant, width: 1.5),
@@ -339,32 +313,24 @@ class AppTheme {
   // Enhanced floating action button theme
   static FloatingActionButtonThemeData floatingActionButtonTheme =
       FloatingActionButtonThemeData(
-    backgroundColor: secondary,
-    foregroundColor: onSecondary,
-    elevation: 6,
-    focusElevation: 8,
-    hoverElevation: 8,
-    disabledElevation: 0,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(16),
-    ),
-  );
+        backgroundColor: secondary,
+        foregroundColor: onSecondary,
+        elevation: 6,
+        focusElevation: 8,
+        hoverElevation: 8,
+        disabledElevation: 0,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      );
 
   // Enhanced bottom navigation theme
-  static BottomNavigationBarThemeData bottomNavigationBarTheme =
-      const BottomNavigationBarThemeData(
+  static BottomNavigationBarThemeData
+  bottomNavigationBarTheme = const BottomNavigationBarThemeData(
     backgroundColor: surface,
     selectedItemColor: primary,
     unselectedItemColor: onSurfaceVariant,
     elevation: 8,
-    selectedLabelStyle: TextStyle(
-      fontWeight: FontWeight.w600,
-      fontSize: 12,
-    ),
-    unselectedLabelStyle: TextStyle(
-      fontWeight: FontWeight.w500,
-      fontSize: 12,
-    ),
+    selectedLabelStyle: TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
+    unselectedLabelStyle: TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
   );
 
   // Create the enhanced theme data
@@ -383,15 +349,9 @@ class AppTheme {
     ),
     scaffoldBackgroundColor: background,
     appBarTheme: appBarTheme,
-    elevatedButtonTheme: ElevatedButtonThemeData(
-      style: primaryButtonStyle,
-    ),
-    outlinedButtonTheme: OutlinedButtonThemeData(
-      style: outlinedButtonStyle,
-    ),
-    textButtonTheme: TextButtonThemeData(
-      style: textButtonStyle,
-    ),
+    elevatedButtonTheme: ElevatedButtonThemeData(style: primaryButtonStyle),
+    outlinedButtonTheme: OutlinedButtonThemeData(style: outlinedButtonStyle),
+    textButtonTheme: TextButtonThemeData(style: textButtonStyle),
     floatingActionButtonTheme: floatingActionButtonTheme,
     bottomNavigationBarTheme: bottomNavigationBarTheme,
     chipTheme: chipTheme,
@@ -413,9 +373,7 @@ class AppTheme {
       labelSmall: labelSmall,
     ),
     inputDecorationTheme: InputDecorationTheme(
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
       filled: true,
       fillColor: surface,
     ),
@@ -448,25 +406,16 @@ class AppTheme {
       ),
       toolbarHeight: 64,
     ),
-    elevatedButtonTheme: ElevatedButtonThemeData(
-      style: primaryButtonStyle,
-    ),
-    outlinedButtonTheme: OutlinedButtonThemeData(
-      style: outlinedButtonStyle,
-    ),
-    textButtonTheme: TextButtonThemeData(
-      style: textButtonStyle,
-    ),
+    elevatedButtonTheme: ElevatedButtonThemeData(style: primaryButtonStyle),
+    outlinedButtonTheme: OutlinedButtonThemeData(style: outlinedButtonStyle),
+    textButtonTheme: TextButtonThemeData(style: textButtonStyle),
     floatingActionButtonTheme: floatingActionButtonTheme,
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
       backgroundColor: darkSurface,
       selectedItemColor: primary,
       unselectedItemColor: darkOnSurfaceVariant,
       elevation: 8,
-      selectedLabelStyle: TextStyle(
-        fontWeight: FontWeight.w600,
-        fontSize: 12,
-      ),
+      selectedLabelStyle: TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
       unselectedLabelStyle: TextStyle(
         fontWeight: FontWeight.w500,
         fontSize: 12,
@@ -577,9 +526,7 @@ class AppTheme {
       ),
     ),
     inputDecorationTheme: InputDecorationTheme(
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
       filled: true,
       fillColor: darkSurface,
     ),
@@ -598,18 +545,14 @@ class CustomSnackbar {
             Expanded(
               child: Text(
                 message,
-                style: AppTheme.bodyMedium.copyWith(
-                  color: AppTheme.onPrimary,
-                ),
+                style: AppTheme.bodyMedium.copyWith(color: AppTheme.onPrimary),
               ),
             ),
           ],
         ),
         backgroundColor: AppTheme.success,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         margin: const EdgeInsets.all(16),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         duration: const Duration(seconds: 3),
@@ -627,18 +570,14 @@ class CustomSnackbar {
             Expanded(
               child: Text(
                 message,
-                style: AppTheme.bodyMedium.copyWith(
-                  color: AppTheme.onPrimary,
-                ),
+                style: AppTheme.bodyMedium.copyWith(color: AppTheme.onPrimary),
               ),
             ),
           ],
         ),
         backgroundColor: AppTheme.error,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         margin: const EdgeInsets.all(16),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         duration: const Duration(seconds: 4),
@@ -656,18 +595,14 @@ class CustomSnackbar {
             Expanded(
               child: Text(
                 message,
-                style: AppTheme.bodyMedium.copyWith(
-                  color: AppTheme.onPrimary,
-                ),
+                style: AppTheme.bodyMedium.copyWith(color: AppTheme.onPrimary),
               ),
             ),
           ],
         ),
         backgroundColor: AppTheme.info,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         margin: const EdgeInsets.all(16),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         duration: const Duration(seconds: 3),

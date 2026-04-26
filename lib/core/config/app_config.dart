@@ -36,6 +36,7 @@ class PrefsKeys {
   static const String employeeName = 'EMPLOYEE_NAME';
   static const String role = 'ROLE';
   static const String empId = 'EMP_ID';
+  static const String activities = 'ACTIVITIES';
   static const String darkMode = 'dark_mode';
 }
 
@@ -69,7 +70,6 @@ class UserRoles {
   static const String qualityControlEngineer = 'QUALITY CONTROL ENGINEER';
   static const String qualityControlManager = 'QUALITY CONTROL MANAGER';
   static const String qcManager = 'QC MANAGER';
-  static const String floorManager = 'FLOOR MANAGER';
   static const String supervisor = 'SUPERVISOR';
   static const String gm = 'GM';
   static const String processPlannerRole = 'PROCESS PLANNER';
@@ -89,5 +89,5 @@ class UserRoles {
     qcManager,
   ];
 
-  static const List<String> floorRoles = [floorManager, supervisor];
+  static const List<String> supervisorRoles = [supervisor];
 }

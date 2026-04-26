@@ -70,10 +70,15 @@ class _QcWorkspaceState extends State<QcWorkspace> {
       if (!mounted) return;
       if (res.statusCode == 200) {
         final list = res.data as List;
-        setState(() => _approvedGarments =
-            list.whereType<Map>().map((e) => Map<String, dynamic>.from(e)).toList());
+        setState(
+          () => _approvedGarments = list
+              .whereType<Map>()
+              .map((e) => Map<String, dynamic>.from(e))
+              .toList(),
+        );
       }
-    } catch (_) {} finally {
+    } catch (_) {
+    } finally {
       if (mounted) setState(() => _loadingGarments = false);
     }
   }
@@ -85,10 +90,15 @@ class _QcWorkspaceState extends State<QcWorkspace> {
       if (!mounted) return;
       if (res.statusCode == 200) {
         final list = res.data as List;
-        setState(() => _packagingRecords =
-            list.whereType<Map>().map((e) => Map<String, dynamic>.from(e)).toList());
+        setState(
+          () => _packagingRecords = list
+              .whereType<Map>()
+              .map((e) => Map<String, dynamic>.from(e))
+              .toList(),
+        );
       }
-    } catch (_) {} finally {
+    } catch (_) {
+    } finally {
       if (mounted) setState(() => _loadingPkgRecords = false);
     }
   }
@@ -105,7 +115,10 @@ class _QcWorkspaceState extends State<QcWorkspace> {
         'garmentId': garmentId,
         'qty': int.tryParse(_pkgQtyCtrl.text.trim()) ?? 1,
       };
-      final res = await ApiClient().dio.post('/api/packaging/package', data: body);
+      final res = await ApiClient().dio.post(
+        '/api/packaging/package',
+        data: body,
+      );
       if (!mounted) return;
       if (res.statusCode == 200) {
         _pkgGarmentIdCtrl.clear();
@@ -131,60 +144,145 @@ class _QcWorkspaceState extends State<QcWorkspace> {
       child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          _sectionCard(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text('Package Finished Goods', style: AppTheme.headlineMedium),
-            const SizedBox(height: 6),
-            Text('Only APPROVED garments can be packaged.',
-                style: AppTheme.bodyMedium.copyWith(color: AppTheme.onSurfaceVariant)),
-            const SizedBox(height: 14),
-            TextField(controller: _pkgGarmentIdCtrl, keyboardType: TextInputType.number,
-                decoration: dark ? AppTheme.darkInputDecoration('Garment ID *') : AppTheme.inputDecoration('Garment ID *')),
-            const SizedBox(height: 12),
-            TextField(controller: _pkgQtyCtrl, keyboardType: TextInputType.number,
-                decoration: dark ? AppTheme.darkInputDecoration('Qty') : AppTheme.inputDecoration('Qty')),
-            const SizedBox(height: 16),
-            SizedBox(width: double.infinity, child: ElevatedButton(
-              onPressed: _packaging ? null : _packageGarment,
-              style: AppTheme.tertiaryButtonStyle,
-              child: Padding(padding: const EdgeInsets.symmetric(vertical: 14),
-                child: _packaging ? const CircularProgressIndicator(color: AppTheme.onPrimary)
-                    : Text('PACKAGE GARMENT', style: AppTheme.labelLarge.copyWith(color: AppTheme.onPrimary, fontWeight: FontWeight.bold))),
-            )),
-          ])),
-          _sectionCard(child: Row(children: [
-            Expanded(child: Text('Approved Garments', style: AppTheme.titleLarge)),
-            IconButton(onPressed: _loadingGarments ? null : _loadApprovedGarments, icon: const Icon(Icons.refresh)),
-          ])),
+          _sectionCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Package Finished Goods', style: AppTheme.headlineMedium),
+                const SizedBox(height: 6),
+                Text(
+                  'Only APPROVED garments can be packaged.',
+                  style: AppTheme.bodyMedium.copyWith(
+                    color: AppTheme.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: 14),
+                TextField(
+                  controller: _pkgGarmentIdCtrl,
+                  keyboardType: TextInputType.number,
+                  decoration: dark
+                      ? AppTheme.darkInputDecoration('Garment ID *')
+                      : AppTheme.inputDecoration('Garment ID *'),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: _pkgQtyCtrl,
+                  keyboardType: TextInputType.number,
+                  decoration: dark
+                      ? AppTheme.darkInputDecoration('Qty')
+                      : AppTheme.inputDecoration('Qty'),
+                ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _packaging ? null : _packageGarment,
+                    style: AppTheme.tertiaryButtonStyle,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      child: _packaging
+                          ? const CircularProgressIndicator(
+                              color: AppTheme.onPrimary,
+                            )
+                          : Text(
+                              'PACKAGE GARMENT',
+                              style: AppTheme.labelLarge.copyWith(
+                                color: AppTheme.onPrimary,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          _sectionCard(
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text('Approved Garments', style: AppTheme.titleLarge),
+                ),
+                IconButton(
+                  onPressed: _loadingGarments ? null : _loadApprovedGarments,
+                  icon: const Icon(Icons.refresh),
+                ),
+              ],
+            ),
+          ),
           if (_loadingGarments)
-            const Center(child: Padding(padding: EdgeInsets.all(16), child: CircularProgressIndicator()))
+            const Center(
+              child: Padding(
+                padding: EdgeInsets.all(16),
+                child: CircularProgressIndicator(),
+              ),
+            )
           else if (_approvedGarments.isEmpty)
-            _sectionCard(child: Text('No approved garments.', style: AppTheme.bodyLarge))
+            _sectionCard(
+              child: Text('No approved garments.', style: AppTheme.bodyLarge),
+            )
           else
-            ..._approvedGarments.map((g) => Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: _sectionCard(child: Row(children: [
-                const Icon(Icons.check_circle, color: AppTheme.success, size: 20),
-                const SizedBox(width: 10),
-                Text('Garment #${g['garmentId']} • Bundle: ${g['bundleId'] ?? '-'} • ${g['status']}',
-                    style: AppTheme.bodyMedium),
-              ])),
-            )),
+            ..._approvedGarments.map(
+              (g) => Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: _sectionCard(
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.check_circle,
+                        color: AppTheme.success,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        'Garment #${g['garmentId']} • Bundle: ${g['bundleId'] ?? '-'} • ${g['status']}',
+                        style: AppTheme.bodyMedium,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           const SizedBox(height: 8),
-          _sectionCard(child: Row(children: [
-            Expanded(child: Text('Packaging Records', style: AppTheme.titleLarge)),
-            IconButton(onPressed: _loadingPkgRecords ? null : _loadPackagingRecords, icon: const Icon(Icons.refresh)),
-          ])),
+          _sectionCard(
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text('Packaging Records', style: AppTheme.titleLarge),
+                ),
+                IconButton(
+                  onPressed: _loadingPkgRecords ? null : _loadPackagingRecords,
+                  icon: const Icon(Icons.refresh),
+                ),
+              ],
+            ),
+          ),
           if (_loadingPkgRecords)
-            const Center(child: Padding(padding: EdgeInsets.all(16), child: CircularProgressIndicator()))
+            const Center(
+              child: Padding(
+                padding: EdgeInsets.all(16),
+                child: CircularProgressIndicator(),
+              ),
+            )
           else if (_packagingRecords.isEmpty)
-            _sectionCard(child: Text('No packaging records yet.', style: AppTheme.bodyLarge))
+            _sectionCard(
+              child: Text(
+                'No packaging records yet.',
+                style: AppTheme.bodyLarge,
+              ),
+            )
           else
-            ..._packagingRecords.map((p) => Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: _sectionCard(child: Text(
-                  'Pkg #${p['packagingId']} • Garment: ${p['garmentId']} • Qty: ${p['qty']}',
-                  style: AppTheme.bodyMedium)),
-            )),
+            ..._packagingRecords.map(
+              (p) => Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: _sectionCard(
+                  child: Text(
+                    'Pkg #${p['packagingId']} • Garment: ${p['garmentId']} • Qty: ${p['qty']}',
+                    style: AppTheme.bodyMedium,
+                  ),
+                ),
+              ),
+            ),
         ],
       ),
     );
@@ -248,9 +346,9 @@ class _QcWorkspaceState extends State<QcWorkspace> {
     setState(() => _isSubmitting = true);
     try {
       final response = await ApiClient().dio.post(
-            '/api/qc/inspection',
-            data: body,
-          );
+        '/api/qc/inspection',
+        data: body,
+      );
 
       if (!mounted) return;
 
@@ -291,9 +389,9 @@ class _QcWorkspaceState extends State<QcWorkspace> {
     setState(() => _isSubmitting = true);
     try {
       final response = await ApiClient().dio.patch(
-            '/api/qc/$qcId/decision',
-            queryParameters: {'status': _decisionStatus},
-          );
+        '/api/qc/$qcId/decision',
+        queryParameters: {'status': _decisionStatus},
+      );
 
       if (!mounted) return;
 
@@ -366,7 +464,9 @@ class _QcWorkspaceState extends State<QcWorkspace> {
     if (e is DioException) {
       final data = e.response?.data;
       if (data is Map) {
-        return data['message']?.toString() ?? data['error']?.toString() ?? 'API Error';
+        return data['message']?.toString() ??
+            data['error']?.toString() ??
+            'API Error';
       }
       if (data is String && data.isNotEmpty) return data;
       return e.message ?? 'Unknown network error';
@@ -683,12 +783,36 @@ class _QcWorkspaceState extends State<QcWorkspace> {
                   ),
                 ),
               ),
-              _drawerItem(icon: Icons.fact_check_outlined, label: 'Perform Inspection', index: 0),
-              _drawerItem(icon: Icons.rule_outlined, label: 'Approve / Reject', index: 1),
-              _drawerItem(icon: Icons.replay_outlined, label: 'Send for Rework', index: 2),
-              _drawerItem(icon: Icons.history_outlined, label: 'Recent Actions', index: 3),
-              _drawerItem(icon: Icons.inventory_outlined, label: 'Packaging', index: 4),
-              _drawerItem(icon: Icons.person_outline, label: 'My Profile', index: 5),
+              _drawerItem(
+                icon: Icons.fact_check_outlined,
+                label: 'Perform Inspection',
+                index: 0,
+              ),
+              _drawerItem(
+                icon: Icons.rule_outlined,
+                label: 'Approve / Reject',
+                index: 1,
+              ),
+              _drawerItem(
+                icon: Icons.replay_outlined,
+                label: 'Send for Rework',
+                index: 2,
+              ),
+              _drawerItem(
+                icon: Icons.history_outlined,
+                label: 'Recent Actions',
+                index: 3,
+              ),
+              _drawerItem(
+                icon: Icons.inventory_outlined,
+                label: 'Packaging',
+                index: 4,
+              ),
+              _drawerItem(
+                icon: Icons.person_outline,
+                label: 'My Profile',
+                index: 5,
+              ),
               const Spacer(),
               const Divider(height: 1),
               ListTile(

@@ -40,7 +40,8 @@ class CreateEmployeeRequest {
     return {
       'empId': empId,
       'empName': empName,
-      'roleId': role.roleId.toString(), // Send roleId as string, not role object
+      'roleId': role.roleId
+          .toString(), // Send roleId as string, not role object
       'dob': dob,
       'phone': phone,
       'address': address,

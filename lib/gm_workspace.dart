@@ -6,17 +6,21 @@ import 'core/theme/app_theme.dart';
 import 'login_screen.dart';
 import 'profile_tab.dart';
 import 'core/network/api_client.dart';
+import 'features/gm/presentation/widgets/pending_approvals_view.dart';
+import 'features/process_planner/presentation/widgets/approved_process_plans_view.dart';
 
 class GmWorkspace extends StatefulWidget {
   final String empId;
   final String employeeName;
   final String role;
+  final List<String> activities;
 
   const GmWorkspace({
     super.key,
     required this.empId,
     required this.employeeName,
     required this.role,
+    required this.activities,
   });
 
   @override
@@ -53,8 +57,7 @@ class _GmWorkspaceState extends State<GmWorkspace> {
       final res = await ApiClient().dio.get('/api/insights/gm');
       if (!mounted) return;
       if (res.statusCode == 200) {
-        setState(() =>
-            _insights = Map<String, dynamic>.from(res.data as Map));
+        setState(() => _insights = Map<String, dynamic>.from(res.data as Map));
       }
     } catch (e) {
       if (mounted) CustomSnackbar.showError(context, _extractDioError(e));
@@ -67,7 +70,9 @@ class _GmWorkspaceState extends State<GmWorkspace> {
     if (e is DioException) {
       final data = e.response?.data;
       if (data is Map) {
-        return data['message']?.toString() ?? data['error']?.toString() ?? 'API Error';
+        return data['message']?.toString() ??
+            data['error']?.toString() ??
+            'API Error';
       }
       if (data is String && data.isNotEmpty) return data;
       return e.message ?? 'Unknown network error';
@@ -80,8 +85,7 @@ class _GmWorkspaceState extends State<GmWorkspace> {
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.only(bottom: 12),
-      decoration:
-          dark ? AppTheme.darkCardDecoration : AppTheme.cardDecoration,
+      decoration: dark ? AppTheme.darkCardDecoration : AppTheme.cardDecoration,
       child: Padding(padding: const EdgeInsets.all(16), child: child),
     );
   }
@@ -102,13 +106,20 @@ class _GmWorkspaceState extends State<GmWorkspace> {
         children: [
           Icon(icon, color: color, size: 26),
           const SizedBox(height: 10),
-          Text(value,
-              style: AppTheme.displaySmall
-                  .copyWith(color: color, fontWeight: FontWeight.bold)),
+          Text(
+            value,
+            style: AppTheme.displaySmall.copyWith(
+              color: color,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           const SizedBox(height: 4),
-          Text(label,
-              style: AppTheme.bodySmall
-                  .copyWith(color: AppTheme.onSurfaceVariant)),
+          Text(
+            label,
+            style: AppTheme.bodySmall.copyWith(
+              color: AppTheme.onSurfaceVariant,
+            ),
+          ),
         ],
       ),
     );
@@ -121,22 +132,31 @@ class _GmWorkspaceState extends State<GmWorkspace> {
       child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          _card(Row(children: [
-            Expanded(
-                child: Text('Production Performance',
-                    style: AppTheme.headlineMedium)),
-            IconButton(
-                onPressed: _loading ? null : _loadInsights,
-                icon: const Icon(Icons.refresh)),
-          ])),
+          _card(
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'Production Performance',
+                    style: AppTheme.headlineMedium,
+                  ),
+                ),
+                IconButton(
+                  onPressed: _loading ? null : _loadInsights,
+                  icon: const Icon(Icons.refresh),
+                ),
+              ],
+            ),
+          ),
           if (_loading)
             const Center(
-                child: Padding(
-                    padding: EdgeInsets.all(24),
-                    child: CircularProgressIndicator()))
+              child: Padding(
+                padding: EdgeInsets.all(24),
+                child: CircularProgressIndicator(),
+              ),
+            )
           else if (d == null)
-            _card(Text('No data. Pull to refresh.',
-                style: AppTheme.bodyLarge))
+            _card(Text('No data. Pull to refresh.', style: AppTheme.bodyLarge))
           else ...[
             GridView.count(
               crossAxisCount: 2,
@@ -147,25 +167,29 @@ class _GmWorkspaceState extends State<GmWorkspace> {
               childAspectRatio: 1.2,
               children: [
                 _statTile(
-                    'Total WIP Records',
-                    '${d['totalWipRecords'] ?? 0}',
-                    Icons.inventory_2_outlined,
-                    AppTheme.primary),
+                  'Total WIP Records',
+                  '${d['totalWipRecords'] ?? 0}',
+                  Icons.inventory_2_outlined,
+                  AppTheme.primary,
+                ),
                 _statTile(
-                    'Active WIP',
-                    '${d['activeWipRecords'] ?? 0}',
-                    Icons.play_circle_outline,
-                    AppTheme.secondary),
+                  'Active WIP',
+                  '${d['activeWipRecords'] ?? 0}',
+                  Icons.play_circle_outline,
+                  AppTheme.secondary,
+                ),
                 _statTile(
-                    'Total Inventory Qty',
-                    '${d['totalInventoryQty'] ?? 0}',
-                    Icons.warehouse_outlined,
-                    AppTheme.tertiary),
+                  'Total Inventory Qty',
+                  '${d['totalInventoryQty'] ?? 0}',
+                  Icons.warehouse_outlined,
+                  AppTheme.tertiary,
+                ),
                 _statTile(
-                    'Report Status',
-                    '${d['reportStatus'] ?? '-'}',
-                    Icons.assessment_outlined,
-                    AppTheme.success),
+                  'Report Status',
+                  '${d['reportStatus'] ?? '-'}',
+                  Icons.assessment_outlined,
+                  AppTheme.success,
+                ),
               ],
             ),
           ],
@@ -181,36 +205,50 @@ class _GmWorkspaceState extends State<GmWorkspace> {
       child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          _card(Row(children: [
-            Expanded(
-                child: Text('Inventory Analysis',
-                    style: AppTheme.headlineMedium)),
-            IconButton(
-                onPressed: _loading ? null : _loadInsights,
-                icon: const Icon(Icons.refresh)),
-          ])),
+          _card(
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'Inventory Analysis',
+                    style: AppTheme.headlineMedium,
+                  ),
+                ),
+                IconButton(
+                  onPressed: _loading ? null : _loadInsights,
+                  icon: const Icon(Icons.refresh),
+                ),
+              ],
+            ),
+          ),
           if (_loading)
             const Center(
-                child: Padding(
-                    padding: EdgeInsets.all(24),
-                    child: CircularProgressIndicator()))
+              child: Padding(
+                padding: EdgeInsets.all(24),
+                child: CircularProgressIndicator(),
+              ),
+            )
           else if (d == null)
-            _card(Text('No data. Pull to refresh.',
-                style: AppTheme.bodyLarge))
+            _card(Text('No data. Pull to refresh.', style: AppTheme.bodyLarge))
           else
-            _card(Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Stock Summary', style: AppTheme.titleLarge),
-                const SizedBox(height: 14),
-                _infoRow('Total Inventory Qty',
-                    '${d['totalInventoryQty'] ?? 0}'),
-                _infoRow('Active WIP Records',
-                    '${d['activeWipRecords'] ?? 0}'),
-                _infoRow('Total WIP Records',
-                    '${d['totalWipRecords'] ?? 0}'),
-              ],
-            )),
+            _card(
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Stock Summary', style: AppTheme.titleLarge),
+                  const SizedBox(height: 14),
+                  _infoRow(
+                    'Total Inventory Qty',
+                    '${d['totalInventoryQty'] ?? 0}',
+                  ),
+                  _infoRow(
+                    'Active WIP Records',
+                    '${d['activeWipRecords'] ?? 0}',
+                  ),
+                  _infoRow('Total WIP Records', '${d['totalWipRecords'] ?? 0}'),
+                ],
+              ),
+            ),
         ],
       ),
     );
@@ -223,42 +261,48 @@ class _GmWorkspaceState extends State<GmWorkspace> {
       child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          _card(
-              Text('Reports', style: AppTheme.headlineMedium)),
+          _card(Text('Reports', style: AppTheme.headlineMedium)),
           if (_loading)
             const Center(
-                child: Padding(
-                    padding: EdgeInsets.all(24),
-                    child: CircularProgressIndicator()))
+              child: Padding(
+                padding: EdgeInsets.all(24),
+                child: CircularProgressIndicator(),
+              ),
+            )
           else if (d == null)
-            _card(Text('No data. Pull to refresh.',
-                style: AppTheme.bodyLarge))
+            _card(Text('No data. Pull to refresh.', style: AppTheme.bodyLarge))
           else ...[
-            _card(Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(children: [
-                  Icon(
-                    d['reportStatus'] == 'READY'
-                        ? Icons.check_circle_outline
-                        : Icons.hourglass_empty,
-                    color: d['reportStatus'] == 'READY'
-                        ? AppTheme.success
-                        : AppTheme.warning,
+            _card(
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        d['reportStatus'] == 'READY'
+                            ? Icons.check_circle_outline
+                            : Icons.hourglass_empty,
+                        color: d['reportStatus'] == 'READY'
+                            ? AppTheme.success
+                            : AppTheme.warning,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Report Status: ${d['reportStatus'] ?? '-'}',
+                        style: AppTheme.titleLarge,
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 8),
-                  Text('Report Status: ${d['reportStatus'] ?? '-'}',
-                      style: AppTheme.titleLarge),
-                ]),
-                const SizedBox(height: 14),
-                _infoRow('Total WIP Records',
-                    '${d['totalWipRecords'] ?? 0}'),
-                _infoRow('Active WIP',
-                    '${d['activeWipRecords'] ?? 0}'),
-                _infoRow('Total Inventory Qty',
-                    '${d['totalInventoryQty'] ?? 0}'),
-              ],
-            )),
+                  const SizedBox(height: 14),
+                  _infoRow('Total WIP Records', '${d['totalWipRecords'] ?? 0}'),
+                  _infoRow('Active WIP', '${d['activeWipRecords'] ?? 0}'),
+                  _infoRow(
+                    'Total Inventory Qty',
+                    '${d['totalInventoryQty'] ?? 0}',
+                  ),
+                ],
+              ),
+            ),
           ],
         ],
       ),
@@ -272,9 +316,13 @@ class _GmWorkspaceState extends State<GmWorkspace> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(label, style: AppTheme.bodyMedium),
-          Text(value,
-              style: AppTheme.titleMedium.copyWith(
-                  color: AppTheme.primary, fontWeight: FontWeight.w700)),
+          Text(
+            value,
+            style: AppTheme.titleMedium.copyWith(
+              color: AppTheme.primary,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
         ],
       ),
     );
@@ -283,13 +331,17 @@ class _GmWorkspaceState extends State<GmWorkspace> {
   Widget _drawerItem(IconData icon, String label, int index) {
     final sel = _tab == index;
     return ListTile(
-      leading: Icon(icon,
-          color: sel ? AppTheme.primary : AppTheme.onSurfaceVariant),
-      title: Text(label,
-          style: AppTheme.bodyMedium.copyWith(
-            color: sel ? AppTheme.primary : AppTheme.onSurface,
-            fontWeight: sel ? FontWeight.w700 : FontWeight.w500,
-          )),
+      leading: Icon(
+        icon,
+        color: sel ? AppTheme.primary : AppTheme.onSurfaceVariant,
+      ),
+      title: Text(
+        label,
+        style: AppTheme.bodyMedium.copyWith(
+          color: sel ? AppTheme.primary : AppTheme.onSurface,
+          fontWeight: sel ? FontWeight.w700 : FontWeight.w500,
+        ),
+      ),
       selected: sel,
       onTap: () {
         Navigator.of(context).pop();
@@ -300,21 +352,43 @@ class _GmWorkspaceState extends State<GmWorkspace> {
 
   @override
   Widget build(BuildContext context) {
-    final tabs = [
-      _productionTab(),
-      _inventoryTab(),
-      _reportsTab(),
-      ProfileTab(empId: _empId),
-    ];
+    final acts = widget.activities;
+
+    // Build tabs based on activities
+    final tabItems = <({IconData icon, String label, Widget screen})>[];
+
+    if (acts.contains('PP_APPROVE') || acts.contains('PP_VIEW_ALL')) {
+      tabItems.add((icon: Icons.trending_up_outlined, label: 'Production Performance', screen: _productionTab()));
+    }
+    if (acts.contains('PP_VIEW_ALL')) {
+      tabItems.add((icon: Icons.warehouse_outlined, label: 'Inventory Analysis', screen: _inventoryTab()));
+      tabItems.add((icon: Icons.assessment_outlined, label: 'Reports', screen: _reportsTab()));
+    }
+    if (acts.contains('PP_APPROVE')) {
+      tabItems.add((icon: Icons.pending_actions_outlined, label: 'Pending Approvals', screen: PendingApprovalsView(empId: _empId)));
+    }
+    if (acts.contains('PP_VIEW_ALL')) {
+      tabItems.add((
+        icon: Icons.account_tree_outlined,
+        label: 'Process Plans',
+        screen: ApprovedProcessPlansView(empId: _empId, activities: widget.activities),
+      ));
+    }
+    // Profile always available
+    tabItems.add((icon: Icons.person_outline, label: 'My Profile', screen: ProfileTab(empId: _empId)));
+
+    if (tabItems.isEmpty) {
+      return const Scaffold(body: Center(child: Text('No activities assigned.')));
+    }
+
+    // Clamp _tab to valid range if tabs changed
+    if (_tab >= tabItems.length) _tab = 0;
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('GM Dashboard'),
         actions: [
-          IconButton(
-              onPressed: _logout,
-              tooltip: 'Logout',
-              icon: const Icon(Icons.logout)),
+          IconButton(onPressed: _logout, tooltip: 'Logout', icon: const Icon(Icons.logout)),
         ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(36),
@@ -324,8 +398,7 @@ class _GmWorkspaceState extends State<GmWorkspace> {
               alignment: Alignment.centerLeft,
               child: Text(
                 '${widget.employeeName} • EMP ${widget.empId}',
-                style:
-                    AppTheme.bodySmall.copyWith(color: AppTheme.onPrimary),
+                style: AppTheme.bodySmall.copyWith(color: AppTheme.onPrimary),
               ),
             ),
           ),
@@ -350,44 +423,28 @@ class _GmWorkspaceState extends State<GmWorkspace> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      const Icon(Icons.business_center_outlined,
-                          color: Colors.white, size: 34),
+                      const Icon(Icons.business_center_outlined, color: Colors.white, size: 34),
                       const SizedBox(height: 10),
-                      Text(widget.employeeName,
-                          style: AppTheme.titleLarge.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w700)),
+                      Text(widget.employeeName, style: AppTheme.titleLarge.copyWith(color: Colors.white, fontWeight: FontWeight.w700)),
                       const SizedBox(height: 4),
-                      Text('GM • ID ${widget.empId}',
-                          style: AppTheme.bodySmall
-                              .copyWith(color: Colors.white70)),
+                      Text('GM • ID ${widget.empId}', style: AppTheme.bodySmall.copyWith(color: Colors.white70)),
                     ],
                   ),
                 ),
               ),
-              _drawerItem(Icons.trending_up_outlined,
-                  'Production Performance', 0),
-              _drawerItem(
-                  Icons.warehouse_outlined, 'Inventory Analysis', 1),
-              _drawerItem(
-                  Icons.assessment_outlined, 'Reports', 2),
-              _drawerItem(Icons.person_outline, 'My Profile', 3),
+              ...List.generate(tabItems.length, (i) => _drawerItem(tabItems[i].icon, tabItems[i].label, i)),
               const Spacer(),
               const Divider(height: 1),
               ListTile(
-                leading:
-                    const Icon(Icons.logout, color: AppTheme.error),
-                title: Text('Logout',
-                    style: AppTheme.bodyMedium.copyWith(
-                        color: AppTheme.error,
-                        fontWeight: FontWeight.w700)),
+                leading: const Icon(Icons.logout, color: AppTheme.error),
+                title: Text('Logout', style: AppTheme.bodyMedium.copyWith(color: AppTheme.error, fontWeight: FontWeight.w700)),
                 onTap: _logout,
               ),
             ],
           ),
         ),
       ),
-      body: tabs[_tab],
+      body: tabItems[_tab].screen,
     );
   }
 }
