@@ -8,7 +8,7 @@ class DioSetup {
   static Dio createDio() {
     final dio = Dio(
       BaseOptions(
-        baseUrl: baseUrl,
+        baseUrl: AppConfig.baseUrl,
         connectTimeout: Duration(seconds: Timeouts.connectionTimeout),
         receiveTimeout: Duration(seconds: Timeouts.receiveTimeout),
         sendTimeout: Duration(seconds: Timeouts.sendTimeout),

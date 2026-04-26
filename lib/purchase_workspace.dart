@@ -64,6 +64,8 @@ class _PurchaseWorkspaceState extends State<PurchaseWorkspace> {
   @override
   void initState() {
     super.initState();
+    // Set employee ID in API client for authenticated requests
+    ApiClient().setEmpId(widget.empId);
     _fetchVendors();
   }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 
 import 'core/theme/app_theme.dart';
 import 'login_screen.dart';
@@ -37,6 +38,8 @@ class _GmWorkspaceState extends State<GmWorkspace> {
   @override
   void initState() {
     super.initState();
+    // Set employee ID in API client for authenticated requests
+    ApiClient().setEmpId(_empId);
     _loadInsights();
   }
 
@@ -127,6 +130,13 @@ class _GmWorkspaceState extends State<GmWorkspace> {
 
   Widget _productionTab() {
     final d = _insights;
+    
+    // Prepare chart data for Process Plans
+    final chartData = d != null ? [
+      _ChartData('Pending', (d['pendingProcessPlans'] ?? 0).toDouble(), AppTheme.warning),
+      _ChartData('Approved', (d['approvedProcessPlans'] ?? 0).toDouble(), AppTheme.success),
+    ] : <_ChartData>[];
+    
     return RefreshIndicator(
       onRefresh: _loadInsights,
       child: ListView(
@@ -137,7 +147,7 @@ class _GmWorkspaceState extends State<GmWorkspace> {
               children: [
                 Expanded(
                   child: Text(
-                    'Production Performance',
+                    'Process Plan Statistics',
                     style: AppTheme.headlineMedium,
                   ),
                 ),
@@ -158,39 +168,54 @@ class _GmWorkspaceState extends State<GmWorkspace> {
           else if (d == null)
             _card(Text('No data. Pull to refresh.', style: AppTheme.bodyLarge))
           else ...[
-            GridView.count(
-              crossAxisCount: 2,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-              childAspectRatio: 1.2,
-              children: [
-                _statTile(
-                  'Total WIP Records',
-                  '${d['totalWipRecords'] ?? 0}',
-                  Icons.inventory_2_outlined,
-                  AppTheme.primary,
+            // Process Plans Chart
+            Card(
+              elevation: 2,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Process Plans Overview', style: AppTheme.titleLarge),
+                    const SizedBox(height: 24),
+                    SizedBox(
+                      height: 300,
+                      width: double.infinity,
+                      child: SfCartesianChart(
+                        primaryXAxis: const CategoryAxis(
+                          majorGridLines: MajorGridLines(width: 0),
+                        ),
+                        primaryYAxis: const NumericAxis(
+                          axisLine: AxisLine(width: 0),
+                          majorTickLines: MajorTickLines(size: 0),
+                        ),
+                        tooltipBehavior: TooltipBehavior(enable: true),
+                        series: <CartesianSeries>[
+                          ColumnSeries<_ChartData, String>(
+                            dataSource: chartData,
+                            xValueMapper: (_ChartData data, _) => data.category,
+                            yValueMapper: (_ChartData data, _) => data.value,
+                            pointColorMapper: (_ChartData data, _) => data.color,
+                            dataLabelSettings: const DataLabelSettings(
+                              isVisible: true,
+                              textStyle: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            borderRadius: const BorderRadius.all(
+                              Radius.circular(8),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-                _statTile(
-                  'Active WIP',
-                  '${d['activeWipRecords'] ?? 0}',
-                  Icons.play_circle_outline,
-                  AppTheme.secondary,
-                ),
-                _statTile(
-                  'Total Inventory Qty',
-                  '${d['totalInventoryQty'] ?? 0}',
-                  Icons.warehouse_outlined,
-                  AppTheme.tertiary,
-                ),
-                _statTile(
-                  'Report Status',
-                  '${d['reportStatus'] ?? '-'}',
-                  Icons.assessment_outlined,
-                  AppTheme.success,
-                ),
-              ],
+              ),
             ),
           ],
         ],
@@ -315,12 +340,19 @@ class _GmWorkspaceState extends State<GmWorkspace> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: AppTheme.bodyMedium),
-          Text(
-            value,
-            style: AppTheme.titleMedium.copyWith(
-              color: AppTheme.primary,
-              fontWeight: FontWeight.w700,
+          Expanded(
+            child: Text(label, style: AppTheme.bodyMedium),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              value,
+              textAlign: TextAlign.end,
+              overflow: TextOverflow.ellipsis,
+              style: AppTheme.titleMedium.copyWith(
+                color: AppTheme.primary,
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ),
         ],
@@ -358,7 +390,7 @@ class _GmWorkspaceState extends State<GmWorkspace> {
     final tabItems = <({IconData icon, String label, Widget screen})>[];
 
     if (acts.contains('PP_APPROVE') || acts.contains('PP_VIEW_ALL')) {
-      tabItems.add((icon: Icons.trending_up_outlined, label: 'Production Performance', screen: _productionTab()));
+      tabItems.add((icon: Icons.trending_up_outlined, label: 'Process Plans Overview', screen: _productionTab()));
     }
     if (acts.contains('PP_VIEW_ALL')) {
       tabItems.add((icon: Icons.warehouse_outlined, label: 'Inventory Analysis', screen: _inventoryTab()));
@@ -447,4 +479,12 @@ class _GmWorkspaceState extends State<GmWorkspace> {
       body: tabItems[_tab].screen,
     );
   }
+}
+
+// Chart data model for Process Plan statistics
+class _ChartData {
+  _ChartData(this.category, this.value, this.color);
+  final String category;
+  final double value;
+  final Color color;
 }

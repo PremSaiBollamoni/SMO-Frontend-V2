@@ -184,54 +184,49 @@ class PendingApprovalsView extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                ElevatedButton.icon(
-                  onPressed: () => _handleViewGraph(context, routing, controller),
-                  icon: const Icon(Icons.account_tree, size: 18),
-                  label: const Text('View Graph'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.primary,
-                    foregroundColor: Colors.white,
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () => _handleViewGraph(context, routing, controller),
+                    icon: const Icon(Icons.account_tree, size: 18),
+                    label: const Text('View Graph'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppTheme.primary,
+                      foregroundColor: Colors.white,
+                    ),
                   ),
                 ),
-                Row(
-                  children: [
-                    OutlinedButton.icon(
-                      onPressed:
-                          controller.isApproving.value ||
-                              controller.isRejecting.value
+                const SizedBox(width: 12),
+                // Reject button - simple X icon
+                IconButton(
+                  onPressed:
+                      controller.isApproving.value ||
+                          controller.isRejecting.value
                           ? null
                           : () => _handleReject(context, routing, controller),
-                      icon: const Icon(Icons.close, size: 18),
-                      label: const Text('Reject'),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: Colors.red,
-                        side: const BorderSide(color: Colors.red),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    ElevatedButton.icon(
-                      onPressed:
-                          controller.isApproving.value ||
-                              controller.isRejecting.value
+                  icon: const Icon(Icons.close, size: 24),
+                  color: Colors.red,
+                  tooltip: 'Reject',
+                ),
+                const SizedBox(width: 8),
+                // Approve button - simple checkmark icon
+                IconButton(
+                  onPressed:
+                      controller.isApproving.value ||
+                          controller.isRejecting.value
                           ? null
                           : () => _handleApprove(context, routing, controller),
-                      icon: controller.isApproving.value
-                          ? const SizedBox(
-                              width: 18,
-                              height: 18,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: Colors.white,
-                              ),
-                            )
-                          : const Icon(Icons.check, size: 18),
-                      label: const Text('Approve'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.success,
-                        foregroundColor: Colors.white,
-                      ),
-                    ),
-                  ],
+                  icon: controller.isApproving.value
+                      ? const SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(AppTheme.success),
+                          ),
+                        )
+                      : const Icon(Icons.check, size: 24),
+                  color: AppTheme.success,
+                  tooltip: 'Approve',
                 ),
               ],
             ),

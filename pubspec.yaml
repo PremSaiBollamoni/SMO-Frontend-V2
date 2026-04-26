@@ -21,6 +21,7 @@ dependencies:
   dio: ^5.7.0
   pretty_dio_logger: ^1.4.0
   get: ^4.6.6
+  multicast_dns: ^0.3.2+7
 
 dev_dependencies:
   flutter_test:

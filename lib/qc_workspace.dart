@@ -27,6 +27,13 @@ class _QcWorkspaceState extends State<QcWorkspace> {
   int _selectedTab = 0;
   bool _isSubmitting = false;
 
+  @override
+  void initState() {
+    super.initState();
+    // Set employee ID in API client for authenticated requests
+    ApiClient().setEmpId(widget.empId);
+  }
+
   // Perform Inspection
   final _inspectionGarmentIdController = TextEditingController();
   final _inspectionDefectsController = TextEditingController();

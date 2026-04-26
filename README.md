@@ -89,6 +89,16 @@ SMO Frontend is a modern, feature-rich Flutter application that provides an intu
 - 📋 Item management
 - 🎯 Material issue tracking
 
+#### 7. **Auto-Discovery & Service Configuration**
+- 🔍 Automatic backend service discovery
+- 🌐 mDNS/Bonjour support
+- 📡 Network scanning fallback
+- 🔄 Intelligent retry mechanism
+- 💾 URL caching for offline access
+- 🎯 Multi-network support (192.168.x.x, 10.x.x.x, 172.x.x.x)
+- ⚡ Zero-configuration deployment
+- 🔐 Secure service validation
+
 ---
 
 ## 🖼️ Screenshots
@@ -190,9 +200,17 @@ flutter pub get
 3. **Configure API endpoint**
 ```dart
 // lib/core/config/app_config.dart
-class AppConfig {
-  static const String baseUrl = 'http://your-api-url:8080/api';
-}
+// API endpoint is now automatically discovered!
+// The app will:
+// 1. Try cached URL first
+// 2. Try localhost (http://localhost:8080)
+// 3. Try current machine IP
+// 4. Try mDNS discovery
+// 5. Fall back to network scanning
+
+// For manual override (testing only):
+final discoveryService = Get.find<ServiceDiscoveryService>();
+await discoveryService.setManualBackendUrl('http://192.168.1.100:8080');
 ```
 
 4. **Run the application**
@@ -213,6 +231,35 @@ flutter run -d ios
 ---
 
 ## 🔧 Configuration
+
+### Service Discovery
+
+The app automatically discovers the SMO backend service on your local network. No manual configuration needed!
+
+**Discovery Process:**
+1. **Cached URL** - Checks previously discovered backend
+2. **Localhost** - Tries `http://localhost:8080` (development)
+3. **Current Machine IP** - Scans local network interfaces
+4. **mDNS Discovery** - Uses Bonjour/mDNS for service discovery
+5. **Network Scanning** - Scans local network ranges as fallback
+
+**Supported Networks:**
+- `192.168.x.x` (Class C private)
+- `10.x.x.x` (Class A private)
+- `172.x.x.x` (Class B private)
+- Any other local network
+
+**Manual Override (Testing):**
+```dart
+final discoveryService = Get.find<ServiceDiscoveryService>();
+await discoveryService.setManualBackendUrl('http://192.168.1.100:8080');
+```
+
+**Force Refresh Discovery:**
+```dart
+final discoveryService = Get.find<ServiceDiscoveryService>();
+final backendUrl = await discoveryService.refreshDiscovery();
+```
 
 ### API Configuration
 
@@ -261,6 +308,9 @@ dependencies:
   # Local Storage
   shared_preferences: ^2.2.0
   
+  # Service Discovery
+  multicast_dns: ^0.3.2+7
+  
   # UI Components
   flutter_svg: ^2.0.7
   cached_network_image: ^3.2.3
@@ -272,6 +322,7 @@ dependencies:
   # Charts & Graphs
   fl_chart: ^0.63.0
   graphview: ^1.2.0
+  syncfusion_flutter_charts: ^30.2.7
   
   # Utilities
   intl: ^0.18.1
@@ -421,6 +472,27 @@ flutter test test/features/hr/hr_controller_test.dart
 # Integration tests
 flutter test integration_test/
 ```
+
+## 🔍 Troubleshooting
+
+### Service Discovery Issues
+
+**Problem:** App can't find backend service
+- **Solution 1:** Ensure backend is running on the same network
+- **Solution 2:** Check firewall settings (port 8080 must be accessible)
+- **Solution 3:** Verify both devices are on the same WiFi network
+- **Solution 4:** Manually set backend URL for testing
+
+**Problem:** "Cannot connect to server" error
+- **Solution 1:** Check backend health: `http://backend-ip:8080/api/health`
+- **Solution 2:** Verify network connectivity
+- **Solution 3:** Check if backend is running on port 8080
+- **Solution 4:** Try manual URL configuration
+
+**Problem:** Discovery takes too long
+- **Solution 1:** Cached URL will be used on next launch
+- **Solution 2:** Reduce network scan timeout in `service_discovery.dart`
+- **Solution 3:** Use manual URL configuration for faster startup
 
 ---
 

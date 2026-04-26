@@ -2,11 +2,13 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dio/dio.dart';
+import 'package:get/get.dart';
 
 // Core imports
 import 'core/network/api_client.dart';
 import 'core/config/app_config.dart';
 import 'core/theme/app_theme.dart';
+import 'core/services/service_discovery.dart';
 
 // Feature imports
 import 'login_screen.dart';
@@ -49,8 +51,16 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> _initializeApp() async {
     debugPrint('Initializing app...');
+    
+    // Initialize GetX service locator
+    Get.put(ServiceDiscoveryService());
+    
     await _loadThemePreference();
     debugPrint('Theme loaded');
+    
+    // Discover backend service
+    await _discoverBackendService();
+    
     await _restoreSession();
     debugPrint('Session restored, home: ${_home?.runtimeType}');
 
@@ -62,6 +72,35 @@ class _MyAppState extends State<MyApp> {
 
     debugPrint('Setting isLoading to false');
     setState(() => _isLoading = false);
+  }
+
+  Future<void> _discoverBackendService() async {
+    setState(() {
+      _connectionStatus = 'Discovering SMO backend service...';
+    });
+    
+    try {
+      final discoveryService = Get.find<ServiceDiscoveryService>();
+      final backendUrl = await discoveryService.discoverBackend();
+      
+      if (backendUrl != null) {
+        AppConfig.setBaseUrl(backendUrl);
+        setState(() {
+          _connectionStatus = 'Backend discovered at $backendUrl';
+        });
+        debugPrint('[Main] Backend discovered: $backendUrl');
+      } else {
+        setState(() {
+          _connectionStatus = 'Using fallback URL: ${AppConfig.baseUrl}';
+        });
+        debugPrint('[Main] No backend discovered, using fallback');
+      }
+    } catch (e) {
+      setState(() {
+        _connectionStatus = 'Discovery failed, using fallback URL';
+      });
+      debugPrint('[Main] Discovery error: $e');
+    }
   }
 
   Future<void> _checkBackendConnection() async {
@@ -252,7 +291,7 @@ class _MyAppState extends State<MyApp> {
       if (_connectionSuccess) {
         CustomSnackbar.showSuccess(
           context,
-          'Server is running, Connected to $baseUrl',
+          'Server is running, Connected to ${AppConfig.baseUrl}',
         );
       } else {
         CustomSnackbar.showError(

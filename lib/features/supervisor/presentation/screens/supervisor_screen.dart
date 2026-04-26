@@ -42,6 +42,8 @@ class _SupervisorScreenState extends State<SupervisorScreen> {
   @override
   void initState() {
     super.initState();
+    // Set employee ID in API client for authenticated requests
+    ApiClient().setEmpId(widget.empId);
     _controller = Get.put(SupervisorController());
     _controller.initialize(widget.empId, widget.employeeName, widget.role);
     _controller.fetchFloorInsights();

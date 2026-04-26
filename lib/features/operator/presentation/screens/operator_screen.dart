@@ -34,6 +34,8 @@ class _OperatorScreenState extends State<OperatorScreen> {
   @override
   void initState() {
     super.initState();
+    // Set employee ID in API client for authenticated requests
+    ApiClient().setEmpId(widget.empId);
     final controller = Get.put(OperatorController());
     controller.initialize(widget.empId, widget.employeeName, widget.role);
     controller.fetchTasks();

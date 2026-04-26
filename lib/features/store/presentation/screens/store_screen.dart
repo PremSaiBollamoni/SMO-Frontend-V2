@@ -37,6 +37,8 @@ class _StoreScreenState extends State<StoreScreen> {
   @override
   void initState() {
     super.initState();
+    // Set employee ID in API client for authenticated requests
+    ApiClient().setEmpId(widget.empId);
     final controller = Get.put(StoreController());
     controller.initialize(widget.empId, widget.employeeName, widget.role);
     controller.refreshAll();

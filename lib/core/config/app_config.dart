@@ -1,8 +1,37 @@
 /// Application configuration constants
-const String baseUrl = 'http://192.168.29.139:8080';
+/// Base URL is now dynamically discovered via ServiceDiscoveryService
+const String fallbackBaseUrl = 'http://localhost:8080'; // Fallback only
 const String appVersion = '1.0';
 const String appName = 'SMO System';
 const String appSubtitle = 'Sewing Machine Operations';
+
+/// Dynamic Configuration Manager
+class AppConfig {
+  static String? _dynamicBaseUrl;
+  
+  /// Get the current base URL (discovered or fallback)
+  static String get baseUrl {
+    return _dynamicBaseUrl ?? fallbackBaseUrl;
+  }
+  
+  /// Set the discovered base URL
+  static void setBaseUrl(String url) {
+    _dynamicBaseUrl = url;
+    print('[AppConfig] Base URL updated to: $url');
+  }
+  
+  /// Get API base URL
+  static String get apiBaseUrl => '$baseUrl/api';
+  
+  /// Reset to use fallback URL
+  static void resetBaseUrl() {
+    _dynamicBaseUrl = null;
+    print('[AppConfig] Reset to fallback URL: $fallbackBaseUrl');
+  }
+  
+  /// Check if using discovered URL
+  static bool get isUsingDiscoveredUrl => _dynamicBaseUrl != null;
+}
 
 /// API Endpoints
 class ApiEndpoints {
