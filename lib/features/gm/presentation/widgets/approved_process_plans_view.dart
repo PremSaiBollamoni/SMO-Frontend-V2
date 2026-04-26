@@ -2,29 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import '../../../../core/network/api_client.dart';
 import '../../../../core/theme/app_theme.dart';
-import '../../data/models/process_plan_view_model.dart';
-import 'workflow_graph/workflow_node.dart';
-import 'workflow_graph/horizontal_workflow_graph.dart';
-import 'workflow_graph/workflow_graph_builder.dart';
-import 'node_metrics_dialog.dart';
+import '../../../process_planner/data/models/process_plan_view_model.dart';
+import '../../../process_planner/presentation/widgets/workflow_graph/workflow_node.dart';
+import '../../../process_planner/presentation/widgets/workflow_graph/horizontal_workflow_graph.dart';
+import '../../../process_planner/presentation/widgets/workflow_graph/workflow_graph_builder.dart';
+import '../../../process_planner/presentation/widgets/node_metrics_dialog.dart';
 
-/// Shows a list of APPROVED process plans.
-/// Tapping a plan opens the graph. Tapping a node (if PP_VIEW_NODE_METRICS) shows metrics.
-class ApprovedProcessPlansView extends StatefulWidget {
+/// GM-specific approved process plans view with clickable nodes for strategic monitoring
+/// Shows APPROVED process plans only - nodes are clickable for production insights
+class GmApprovedProcessPlansView extends StatefulWidget {
   final String empId;
-  final List<String> activities;
 
-  const ApprovedProcessPlansView({
+  const GmApprovedProcessPlansView({
     super.key,
     required this.empId,
-    required this.activities,
   });
 
   @override
-  State<ApprovedProcessPlansView> createState() => _ApprovedProcessPlansViewState();
+  State<GmApprovedProcessPlansView> createState() => _GmApprovedProcessPlansViewState();
 }
 
-class _ApprovedProcessPlansViewState extends State<ApprovedProcessPlansView> {
+class _GmApprovedProcessPlansViewState extends State<GmApprovedProcessPlansView> {
   bool _loading = true;
   String? _error;
   List<ProcessPlanViewModel> _plans = [];
@@ -68,9 +66,8 @@ class _ApprovedProcessPlansViewState extends State<ApprovedProcessPlansView> {
     }
   }
 
-  void _openGraph(ProcessPlanViewModel plan) {
+  void _openStrategicMonitor(ProcessPlanViewModel plan) {
     final nodes = _buildNodes(plan);
-    final canViewMetrics = widget.activities.contains('PP_VIEW_NODE_METRICS');
 
     showDialog(
       context: context,
@@ -90,11 +87,11 @@ class _ApprovedProcessPlansViewState extends State<ApprovedProcessPlansView> {
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.account_tree_outlined, color: Colors.white, size: 20),
+                  const Icon(Icons.analytics_outlined, color: Colors.white, size: 20),
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      'Routing #${plan.routingId} — Product #${plan.productId}',
+                      'Strategic Monitor - Routing #${plan.routingId}',
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 16,
@@ -113,7 +110,17 @@ class _ApprovedProcessPlansViewState extends State<ApprovedProcessPlansView> {
               child: ClipRect(
                 child: HorizontalWorkflowGraph(
                   nodes: nodes,
-                  onNodeTap: null, // Process Planner is readonly - no node interactions
+                  onNodeTap: (routingId, operationId, operationName) {
+                    showDialog(
+                      context: ctx,
+                      builder: (_) => NodeMetricsDialog(
+                        routingId: routingId,
+                        operationId: operationId,
+                        operationName: operationName,
+                        empId: widget.empId,
+                      ),
+                    );
+                  },
                 ),
               ),
             ),
@@ -187,7 +194,7 @@ class _ApprovedProcessPlansViewState extends State<ApprovedProcessPlansView> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.account_tree_outlined, size: 56, color: Colors.grey.shade400),
+            Icon(Icons.analytics_outlined, size: 56, color: Colors.grey.shade400),
             const SizedBox(height: 12),
             Text('No approved process plans', style: AppTheme.bodyLarge.copyWith(color: AppTheme.onSurfaceVariant)),
           ],
@@ -200,22 +207,22 @@ class _ApprovedProcessPlansViewState extends State<ApprovedProcessPlansView> {
       child: ListView.builder(
         padding: const EdgeInsets.all(16),
         itemCount: _plans.length,
-        itemBuilder: (_, i) => _PlanCard(
+        itemBuilder: (_, i) => _StrategicPlanCard(
           plan: _plans[i],
           dark: dark,
-          onTap: () => _openGraph(_plans[i]),
+          onTap: () => _openStrategicMonitor(_plans[i]),
         ),
       ),
     );
   }
 }
 
-class _PlanCard extends StatelessWidget {
+class _StrategicPlanCard extends StatelessWidget {
   final ProcessPlanViewModel plan;
   final bool dark;
   final VoidCallback onTap;
 
-  const _PlanCard({required this.plan, required this.dark, required this.onTap});
+  const _StrategicPlanCard({required this.plan, required this.dark, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -236,7 +243,7 @@ class _PlanCard extends StatelessWidget {
                   color: AppTheme.primary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Icon(Icons.account_tree_outlined, color: AppTheme.primary, size: 22),
+                child: const Icon(Icons.analytics_outlined, color: AppTheme.primary, size: 22),
               ),
               const SizedBox(width: 14),
               Expanded(
@@ -249,7 +256,7 @@ class _PlanCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      'Product #${plan.productId} • ${plan.operations.length} operations',
+                      'Product #${plan.productId} • ${plan.operations.length} operations • Click nodes for insights',
                       style: AppTheme.bodySmall.copyWith(color: AppTheme.onSurfaceVariant),
                     ),
                   ],
@@ -258,13 +265,13 @@ class _PlanCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: AppTheme.success.withValues(alpha: 0.12),
+                  color: AppTheme.primary.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  plan.status,
+                  'STRATEGIC',
                   style: AppTheme.labelSmall.copyWith(
-                    color: AppTheme.success,
+                    color: AppTheme.primary,
                     fontWeight: FontWeight.w600,
                   ),
                 ),

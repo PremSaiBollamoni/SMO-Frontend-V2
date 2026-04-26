@@ -99,6 +99,14 @@ SMO Frontend is a modern, feature-rich Flutter application that provides an intu
 - ⚡ Zero-configuration deployment
 - 🔐 Secure service validation
 
+#### 8. **Interactive Workflow Monitoring**
+- 🖱️ Clickable workflow nodes for real-time insights
+- 👥 Role-based access (GM strategic, Supervisor operational)
+- 📊 Live production metrics (WIP, active jobs, completions)
+- 🔄 Auto-refreshing node metrics dialog
+- 📈 Strategic monitoring for bottleneck analysis
+- 🏭 Floor-level monitoring for production tracking
+
 ---
 
 ## 🖼️ Screenshots
@@ -401,11 +409,20 @@ lib/
 
 - **WorkflowGraphBuilder** - Interactive DAG visualization
 - **HorizontalWorkflowGraph** - Left-to-right workflow renderer
-- **WorkflowNode** - Customizable operation node
+- **WorkflowNode** - Customizable operation node with click support
+- **NodeMetricsDialog** - Real-time production metrics popup
 - **TrayQuantityStepper** - Quantity input with validation
 - **DashboardCard** - Reusable metric card
 - **CustomSidebar** - Role-based navigation
 - **CustomTopBar** - Consistent app bar
+
+### Interactive Features
+
+- **Clickable Workflow Nodes** - Tap nodes for real-time metrics
+- **Role-based Access** - GM strategic view, Supervisor operational view
+- **Auto-refresh Metrics** - Live data updates every 30 seconds
+- **Zoom & Pan Support** - Interactive graph navigation
+- **Tooltip Support** - Operation descriptions on hover
 
 ### Color Palette
 

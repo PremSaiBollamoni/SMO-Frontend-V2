@@ -9,6 +9,7 @@ import '../controller/supervisor_controller.dart';
 import '../widgets/dashboard_view.dart';
 import '../widgets/operator_performance_view.dart';
 import '../widgets/reassign_work_view.dart';
+import '../widgets/workflow_monitoring_view.dart';
 import 'qr_assignment_screen.dart';
 import 'tracking_screen.dart';
 import 'merging_screen.dart';
@@ -78,6 +79,9 @@ class _SupervisorScreenState extends State<SupervisorScreen> {
     }
     if (acts.contains('SUPERVISOR_REASSIGN_WORK')) {
       tabs.add(_TabItem(Icons.swap_horiz_outlined, 'Reassign Work', const ReassignWorkView()));
+    }
+    if (acts.contains('SUPERVISOR_MONITOR_WIP')) {
+      tabs.add(_TabItem(Icons.monitor_outlined, 'Workflow Monitor', WorkflowMonitoringView(empId: widget.empId)));
     }
     if (acts.contains('PP_VIEW_ALL')) {
       tabs.add(_TabItem(

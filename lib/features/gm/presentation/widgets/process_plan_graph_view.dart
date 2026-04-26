@@ -5,6 +5,7 @@ import '../../domain/models/pending_routing_model.dart';
 import '../../../process_planner/presentation/widgets/workflow_graph/horizontal_workflow_graph.dart';
 import '../../../process_planner/presentation/widgets/workflow_graph/workflow_node.dart';
 import '../../../process_planner/presentation/widgets/workflow_graph/workflow_graph_builder.dart';
+import '../../../process_planner/presentation/widgets/node_metrics_dialog.dart';
 import '../controller/gm_controller.dart';
 
 /// Dialog to view and approve/reject process plan with graph visualization
@@ -88,7 +89,7 @@ class ProcessPlanGraphView extends StatelessWidget {
             child: ClipRect(
               child: HorizontalWorkflowGraph(
                 nodes: nodes,
-                onNodeTap: null, // Readonly - no node interactions
+                onNodeTap: null, // Readonly during review - no node interactions
               ),
             ),
           ),
