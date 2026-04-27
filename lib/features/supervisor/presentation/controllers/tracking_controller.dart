@@ -143,27 +143,35 @@ class TrackingController extends GetxController {
           title = 'Job Completed';
         }
 
-        Get.snackbar(
-          title,
-          message,
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: backgroundColor,
-          colorText: Colors.white,
-          duration: const Duration(seconds: 4),
-        );
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (Get.context != null) {
+            Get.snackbar(
+              title,
+              message,
+              snackPosition: SnackPosition.BOTTOM,
+              backgroundColor: backgroundColor,
+              colorText: Colors.white,
+              duration: const Duration(seconds: 4),
+            );
+          }
+        });
 
         resetForm();
       } else {
         throw Exception(result['message'] ?? 'Submission failed');
       }
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to submit tracking: $e',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (Get.context != null) {
+          Get.snackbar(
+            'Error',
+            'Failed to submit tracking: $e',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.red,
+            colorText: Colors.white,
+          );
+        }
+      });
     } finally {
       isSubmitting.value = false;
     }

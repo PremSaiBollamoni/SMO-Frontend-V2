@@ -107,6 +107,16 @@ SMO Frontend is a modern, feature-rich Flutter application that provides an intu
 - 📈 Strategic monitoring for bottleneck analysis
 - 🏭 Floor-level monitoring for production tracking
 
+#### 9. **Order Management System** ⭐ NEW
+- 📋 Create and manage production orders
+- 🎯 Link orders to products and process plans
+- 📊 Real-time order progress tracking
+- 🔗 Bin-to-order linkage for WIP tracking
+- 📈 Strategic Monitor for GM oversight
+- ✅ Order activation and status management
+- 🏷️ Supervisor assigns bins to orders during QR assignment
+- 📊 Progress calculation from linked bins and WIP data
+
 ---
 
 ## 🖼️ Screenshots

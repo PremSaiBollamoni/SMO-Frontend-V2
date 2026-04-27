@@ -48,7 +48,8 @@ class SupervisorController extends GetxController {
       floorInsights.value = insights;
     } catch (e) {
       debugPrint('Error fetching floor insights: $e');
-      rethrow;
+      // Set default values instead of throwing
+      floorInsights.value = null;
     } finally {
       loadingInsights.value = false;
     }

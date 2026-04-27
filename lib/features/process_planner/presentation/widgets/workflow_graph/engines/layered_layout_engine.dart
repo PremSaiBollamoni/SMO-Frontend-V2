@@ -11,7 +11,8 @@ import 'phase_level_assigner.dart';
 ///   3. Assign X/Y coordinates: X = level column, Y = centered within level
 class LayeredLayoutEngine {
   // ── Layout constants ───────────────────────────────────────────────────────
-  static const double levelSpacing = 200.0; // Reduced from 220 for tighter edges
+  static const double levelSpacing = 200.0; // Standard horizontal spacing
+  static const double mergeChainLevelSpacing = 160.0; // Tighter spacing for merge chains
   static const double nodeSpacing =
       85.0; // Reduced from 100 for tighter vertical spacing
   static const double startX = 60.0; // Left margin
@@ -51,11 +52,36 @@ class LayeredLayoutEngine {
     // Canvas center Y — anchor for symmetric fan-out
     final canvasCenterY = startY + (maxNodesInLevel * nodeSpacing) / 2 + 40;
 
+    // Build node map for merge detection
+    final nodeMap = <String, WorkflowNode>{};
+    for (final n in nodes) {
+      nodeMap[n.id] = n;
+    }
+
+    // Calculate X positions with adaptive spacing for merge chains
+    double currentX = startX;
+    final levelXPositions = <int, double>{};
+    
+    for (int level = 0; level <= maxLevel; level++) {
+      levelXPositions[level] = currentX;
+      
+      final levelNodes = levelGroups[level] ?? [];
+      if (levelNodes.isEmpty) continue;
+      
+      // Detect if this level is part of a merge chain (single merge node)
+      final isMergeChainLevel = levelNodes.length == 1 && 
+                                 nodeMap[levelNodes.first]?.isMerge == true;
+      
+      // Use tighter spacing for merge chain levels
+      final spacing = isMergeChainLevel ? mergeChainLevelSpacing : levelSpacing;
+      currentX += spacing;
+    }
+
     for (int level = 0; level <= maxLevel; level++) {
       var levelNodes = List<String>.from(levelGroups[level] ?? []);
       if (levelNodes.isEmpty) continue;
 
-      final x = startX + level * levelSpacing;
+      final x = levelXPositions[level]!;
 
       // ── Polish 1: Sort level 2 so BODY_LINE is central ──────────────────
       // Preferred semantic order when all 4 feeder lines are present:

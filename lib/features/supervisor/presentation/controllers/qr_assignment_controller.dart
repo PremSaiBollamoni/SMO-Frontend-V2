@@ -10,8 +10,7 @@ class QrAssignmentController extends GetxController {
   // Form fields
   final qrCodeController = TextEditingController();
   final nextOperationController = TextEditingController();
-  final notesController =
-      TextEditingController(); // Added for enhanced workflow
+  final notesController = TextEditingController();
 
   // Dropdown values
   var selectedProcessPlan = Rx<String?>(null);
@@ -20,6 +19,8 @@ class QrAssignmentController extends GetxController {
   var selectedGtg = Rx<String?>(null);
   var selectedBtn = Rx<String?>(null);
   var selectedLabel = Rx<String?>(null);
+  var selectedOrderNumber = Rx<String?>(null); // Added for order linkage
+  var selectedNextOperation = Rx<String?>(null); // Changed from text field to dropdown
 
   // Tray quantity
   var trayQuantity = 1.obs;
@@ -31,6 +32,8 @@ class QrAssignmentController extends GetxController {
   var gtgNumbers = <String>[].obs;
   var btnNumbers = <String>[].obs;
   var labels = <String>[].obs;
+  var activeOrders = <Map<String, dynamic>>[].obs; // Added for order selection
+  var operations = <Map<String, dynamic>>[].obs; // Added for next operation dropdown
 
   // Loading states
   var isLoading = false.obs;
@@ -40,6 +43,7 @@ class QrAssignmentController extends GetxController {
   void onInit() {
     super.onInit();
     loadDropdownData();
+    loadActiveOrders();
   }
 
   @override
@@ -55,7 +59,6 @@ class QrAssignmentController extends GetxController {
     try {
       isLoading.value = true;
 
-      // Load all dropdown data in parallel
       final results = await Future.wait([
         _apiService.getProcessPlanNumbers(),
         _apiService.getStyles(),
@@ -81,6 +84,29 @@ class QrAssignmentController extends GetxController {
       );
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  // Load active orders
+  Future<void> loadActiveOrders() async {
+    try {
+      final orders = await _apiService.getActiveOrders();
+      activeOrders.value = orders;
+    } catch (e) {
+      debugPrint('[QR_ASSIGNMENT] Failed to load active orders: $e');
+    }
+  }
+
+  // Load operations for selected process plan
+  Future<void> loadOperations(String routingId) async {
+    try {
+      operations.clear();
+      selectedNextOperation.value = null;
+      
+      final ops = await _apiService.getOperationsForRouting(routingId);
+      operations.value = ops;
+    } catch (e) {
+      debugPrint('[QR_ASSIGNMENT] Failed to load operations: $e');
     }
   }
 
@@ -161,44 +187,47 @@ class QrAssignmentController extends GetxController {
         gtgNumber: selectedGtg.value?.trim() ?? '',
         btnNumber: selectedBtn.value?.trim() ?? '',
         label: selectedLabel.value?.trim() ?? '',
-        nextOperation: nextOperationController.text.trim(),
+        nextOperation: selectedNextOperation.value?.trim() ?? '',
         trayQuantity: trayQuantity.value,
-        supervisorId: 1004, // Default supervisor ID
+        supervisorId: 1004,
         notes: notesController.text.trim().isEmpty
             ? null
             : notesController.text.trim(),
+        orderNumber: selectedOrderNumber.value, // Include order number
       );
 
       final response = await _apiService.submitQrAssignment(assignment);
 
       if (response['success'] == true) {
-        // Enhanced success message with details
         String message =
             response['message'] ?? 'QR Assignment submitted successfully';
         if (response['binId'] != null) {
           message += '\nBin ID: ${response['binId']}';
         }
-        if (response['assignmentStartTime'] != null) {
-          message += '\nAssignment Start Time recorded';
+        if (selectedOrderNumber.value != null) {
+          message += '\nLinked to Order: ${selectedOrderNumber.value}';
         }
 
-        Get.snackbar(
-          'Success',
-          message,
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green,
-          colorText: Colors.white,
-          duration: const Duration(seconds: 4),
-        );
+        // Use WidgetsBinding to ensure context is available
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (Get.context != null) {
+            Get.snackbar(
+              'Success',
+              message,
+              snackPosition: SnackPosition.BOTTOM,
+              backgroundColor: Colors.green,
+              colorText: Colors.white,
+              duration: const Duration(seconds: 4),
+            );
+          }
+        });
         resetForm();
       } else {
-        // Enhanced error handling based on error type
         String errorType = response['errorType'] ?? 'UNKNOWN_ERROR';
         String message = response['message'] ?? 'Assignment failed';
 
         Color backgroundColor = Colors.red;
 
-        // Different colors for different error types
         switch (errorType) {
           case 'VALIDATION_ERROR':
             backgroundColor = Colors.orange;
@@ -215,24 +244,32 @@ class QrAssignmentController extends GetxController {
             break;
         }
 
-        Get.snackbar(
-          'Assignment Failed',
-          message,
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: backgroundColor,
-          colorText: Colors.white,
-          duration: const Duration(seconds: 5),
-        );
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (Get.context != null) {
+            Get.snackbar(
+              'Assignment Failed',
+              message,
+              snackPosition: SnackPosition.BOTTOM,
+              backgroundColor: backgroundColor,
+              colorText: Colors.white,
+              duration: const Duration(seconds: 5),
+            );
+          }
+        });
       }
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to submit QR assignment: $e',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-        duration: const Duration(seconds: 4),
-      );
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (Get.context != null) {
+          Get.snackbar(
+            'Error',
+            'Failed to submit QR assignment: $e',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.red,
+            colorText: Colors.white,
+            duration: const Duration(seconds: 4),
+          );
+        }
+      });
     } finally {
       isSubmitting.value = false;
     }
@@ -250,7 +287,10 @@ class QrAssignmentController extends GetxController {
     selectedGtg.value = null;
     selectedBtn.value = null;
     selectedLabel.value = null;
+    selectedOrderNumber.value = null;
+    selectedNextOperation.value = null;
     trayQuantity.value = 1;
+    operations.clear();
   }
 
   // Cancel form

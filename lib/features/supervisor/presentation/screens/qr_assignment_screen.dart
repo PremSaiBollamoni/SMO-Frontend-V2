@@ -49,11 +49,52 @@ class QrAssignmentScreen extends StatelessWidget {
                     label: 'Process Plan Number',
                     value: controller.selectedProcessPlan.value,
                     items: controller.processPlanNumbers,
-                    onChanged: (value) =>
-                        controller.selectedProcessPlan.value = value,
+                    onChanged: (value) {
+                      controller.selectedProcessPlan.value = value;
+                      if (value != null) {
+                        controller.loadOperations(value);
+                      }
+                    },
                     isRequired: true,
                   ),
                   const SizedBox(height: 16),
+
+                  // Order Number (Optional)
+                  Obx(() {
+                    if (controller.activeOrders.isEmpty) {
+                      return const SizedBox.shrink();
+                    }
+                    
+                    return Column(
+                      children: [
+                        DropdownButtonFormField<String>(
+                          value: controller.selectedOrderNumber.value,
+                          decoration: const InputDecoration(
+                            labelText: 'Order Number (Optional)',
+                            border: OutlineInputBorder(),
+                            prefixIcon: Icon(Icons.assignment),
+                            hintText: 'Select order to link bin',
+                          ),
+                          items: [
+                            const DropdownMenuItem<String>(
+                              value: null,
+                              child: Text('No Order (Unassigned)'),
+                            ),
+                            ...controller.activeOrders.map((order) {
+                              return DropdownMenuItem<String>(
+                                value: order['order_number'] ?? order['order_id']?.toString(),
+                                child: Text('${order['order_number'] ?? order['order_id']} - Product #${order['product_id']}'),
+                              );
+                            }).toList(),
+                          ],
+                          onChanged: (value) {
+                            controller.selectedOrderNumber.value = value;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                      ],
+                    );
+                  }),
 
                   // QR Code Field with Scan Button
                   _buildQrCodeField(context, controller),
@@ -106,16 +147,36 @@ class QrAssignmentScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
 
-                  // Next Operation
-                  TextFormField(
-                    controller: controller.nextOperationController,
-                    decoration: const InputDecoration(
-                      labelText: 'Next Operation',
-                      border: OutlineInputBorder(),
-                      hintText: 'Enter next operation',
-                    ),
-                  ),
-                  const SizedBox(height: 16),
+                  // Next Operation (Dropdown from routing operations)
+                  Obx(() {
+                    if (controller.operations.isEmpty) {
+                      return const SizedBox.shrink();
+                    }
+                    
+                    return Column(
+                      children: [
+                        DropdownButtonFormField<String>(
+                          value: controller.selectedNextOperation.value,
+                          decoration: const InputDecoration(
+                            labelText: 'Next Operation',
+                            border: OutlineInputBorder(),
+                            prefixIcon: Icon(Icons.settings),
+                            hintText: 'Select next operation',
+                          ),
+                          items: controller.operations.map((op) {
+                            return DropdownMenuItem<String>(
+                              value: op['name']?.toString(),
+                              child: Text('${op['name']} (Seq: ${op['sequence']})'),
+                            );
+                          }).toList(),
+                          onChanged: (value) {
+                            controller.selectedNextOperation.value = value;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                      ],
+                    );
+                  }),
 
                   // Tray Quantity
                   Column(

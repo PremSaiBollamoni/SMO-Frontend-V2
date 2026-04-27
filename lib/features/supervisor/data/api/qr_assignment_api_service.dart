@@ -89,6 +89,35 @@ class QrAssignmentApiService {
     }
   }
 
+  // Get active orders (dropdown data)
+  Future<List<Map<String, dynamic>>> getActiveOrders() async {
+    try {
+      final response = await _dio.get(
+        '/api/orders/active',
+        queryParameters: {'actorEmpId': '1004'},
+      );
+      if (response.statusCode == 200 && response.data != null) {
+        return List<Map<String, dynamic>>.from(response.data);
+      }
+      return [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  // Get operations for a specific routing/process plan
+  Future<List<Map<String, dynamic>>> getOperationsForRouting(String routingId) async {
+    try {
+      final response = await _dio.get('/api/supervisor/operations/$routingId');
+      if (response.statusCode == 200 && response.data != null) {
+        return List<Map<String, dynamic>>.from(response.data);
+      }
+      return [];
+    } catch (e) {
+      throw Exception('Failed to fetch operations: $e');
+    }
+  }
+
   // Submit QR assignment with enhanced response handling
   Future<Map<String, dynamic>> submitQrAssignment(
     QrAssignmentModel assignment,

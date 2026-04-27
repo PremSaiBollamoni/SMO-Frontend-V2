@@ -25,6 +25,7 @@ class ProcessPlanGraphView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('[GM] ═══════════════════════════════════════════════════════');
     debugPrint('[GM] Opening process plan graph for routing #${routing.routingId}');
     debugPrint('[GM] Product #${routing.productId}, ${routing.operations.length} operations');
     
@@ -33,6 +34,22 @@ class ProcessPlanGraphView extends StatelessWidget {
 
     // Edges are already maps from JSON, just use them directly
     final edgeMaps = (routing.edges ?? []).cast<Map<String, dynamic>>();
+    
+    // ═══ DIAGNOSTIC LOGGING ═══
+    debugPrint('[GM] ─── OPERATIONS (${operationMaps.length}) ───');
+    for (final op in operationMaps) {
+      debugPrint('[GM]   [${op['sequence']}] ${op['name']} (id=${op['operation_id']}, type=${op['operation_type']}, stage=${op['stage_group']})');
+    }
+    
+    debugPrint('[GM] ─── EDGES (${edgeMaps.length}) ───');
+    if (edgeMaps.isEmpty) {
+      debugPrint('[GM]   ⚠️ WARNING: NO EDGES RECEIVED FROM BACKEND');
+    } else {
+      for (final edge in edgeMaps) {
+        debugPrint('[GM]   ${edge['from_name']} → ${edge['to_name']} (type=${edge['edge_type']})');
+      }
+    }
+    debugPrint('[GM] ═══════════════════════════════════════════════════════');
     
     // Build nodes using SHARED builder (same as Process Planner)
     final nodes = WorkflowGraphBuilder.buildNodes(

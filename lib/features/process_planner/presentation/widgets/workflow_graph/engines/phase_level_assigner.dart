@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import '../workflow_node.dart';
 import 'process_dependency_builder.dart';
 
@@ -27,6 +28,13 @@ class PhaseLevelAssigner {
       }
     }
 
+    debugPrint('[PhaseLevelAssigner] ═══ LEVEL ASSIGNMENT START ═══');
+    debugPrint('[PhaseLevelAssigner] Root nodes (level 0): ${queue.length}');
+    for (final id in queue) {
+      final node = nodes.firstWhere((n) => n.id == id);
+      debugPrint('[PhaseLevelAssigner]   L0: ${node.displayName}');
+    }
+
     // Kahn's algorithm — assign level = max parent level + 1
     while (queue.isNotEmpty) {
       final cur = queue.removeAt(0);
@@ -45,47 +53,29 @@ class PhaseLevelAssigner {
       levels.putIfAbsent(n.id, () => 0);
     }
 
-    // ── Polish: Align parallel branches and merge points ──────────────────
-    // Find groups of parallel operations (same stage_group, is_parallel=true)
-    // and align their merge points to same level for clean fan-in
-    
+    // ═══ DIAGNOSTIC: Log final level assignments ═══
+    debugPrint('[PhaseLevelAssigner] ─── FINAL LEVELS ───');
     final nodeMap = <String, WorkflowNode>{};
     for (final n in nodes) {
       nodeMap[n.id] = n;
     }
-
-    // Group nodes by stage_group
-    final stageGroups = <int, List<String>>{};
-    for (final n in nodes) {
-      stageGroups.putIfAbsent(n.sequenceIndex, () => []).add(n.id);
+    
+    final levelGroups = <int, List<String>>{};
+    for (final entry in levels.entries) {
+      levelGroups.putIfAbsent(entry.value, () => []).add(entry.key);
     }
-
-    // For each group of parallel operations, align their merge points
-    for (final nodeId in levels.keys.toList()) {
-      final node = nodeMap[nodeId];
-      if (node == null) continue;
-
-      // If this is a merge point, check if it should be aligned with other merge points
-      if (node.isMerge) {
-        // Find all merge points at similar levels and align them
-        final mergePointsAtLevel = levels.entries
-            .where((e) => nodeMap[e.key]?.isMerge == true && 
-                         (e.value - levels[nodeId]!).abs() <= 1)
-            .map((e) => e.key)
-            .toList();
-
-        // If multiple merge points, align to same level
-        if (mergePointsAtLevel.length > 1) {
-          final maxMergeLevel = mergePointsAtLevel
-              .map((id) => levels[id]!)
-              .reduce((a, b) => a > b ? a : b);
-          
-          for (final mergeId in mergePointsAtLevel) {
-            levels[mergeId] = maxMergeLevel;
-          }
+    final sortedLevels = levelGroups.keys.toList()..sort();
+    for (final level in sortedLevels) {
+      final nodeIds = levelGroups[level]!;
+      debugPrint('[PhaseLevelAssigner]   Level $level (${nodeIds.length} nodes):');
+      for (final id in nodeIds) {
+        final node = nodeMap[id];
+        if (node != null) {
+          debugPrint('[PhaseLevelAssigner]     - ${node.displayName}');
         }
       }
     }
+    debugPrint('[PhaseLevelAssigner] ═══ LEVEL ASSIGNMENT END ═══');
 
     return levels;
   }

@@ -8,8 +8,9 @@ class QrAssignmentModel {
   final String label;
   final String nextOperation;
   final int trayQuantity;
-  final int? supervisorId; // Added for enhanced workflow
-  final String? notes; // Added for enhanced workflow
+  final int? supervisorId;
+  final String? notes;
+  final String? orderNumber; // Added for order linkage
 
   QrAssignmentModel({
     required this.processPlanNumber,
@@ -23,6 +24,7 @@ class QrAssignmentModel {
     required this.trayQuantity,
     this.supervisorId,
     this.notes,
+    this.orderNumber,
   });
 
   Map<String, dynamic> toJson() {
@@ -30,10 +32,9 @@ class QrAssignmentModel {
       'processPlanNumber': processPlanNumber.trim(),
       'qrCode': qrCode.trim(),
       'trayQuantity': trayQuantity,
-      'supervisorId': supervisorId ?? 1004, // Default supervisor ID
+      'supervisorId': supervisorId ?? 1004,
     };
 
-    // Only include non-empty optional fields
     if (style.trim().isNotEmpty) {
       json['style'] = style.trim();
     }
@@ -55,6 +56,9 @@ class QrAssignmentModel {
     if (notes != null && notes!.trim().isNotEmpty) {
       json['notes'] = notes!.trim();
     }
+    if (orderNumber != null && orderNumber!.trim().isNotEmpty) {
+      json['orderNumber'] = orderNumber!.trim();
+    }
 
     return json;
   }
@@ -72,6 +76,7 @@ class QrAssignmentModel {
       trayQuantity: json['trayQuantity'] ?? 1,
       supervisorId: json['supervisorId'],
       notes: json['notes'],
+      orderNumber: json['orderNumber'],
     );
   }
 
@@ -87,6 +92,7 @@ class QrAssignmentModel {
     int? trayQuantity,
     int? supervisorId,
     String? notes,
+    String? orderNumber,
   }) {
     return QrAssignmentModel(
       processPlanNumber: processPlanNumber ?? this.processPlanNumber,
@@ -100,6 +106,7 @@ class QrAssignmentModel {
       trayQuantity: trayQuantity ?? this.trayQuantity,
       supervisorId: supervisorId ?? this.supervisorId,
       notes: notes ?? this.notes,
+      orderNumber: orderNumber ?? this.orderNumber,
     );
   }
 }

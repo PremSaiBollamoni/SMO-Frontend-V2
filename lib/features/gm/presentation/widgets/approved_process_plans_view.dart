@@ -4,9 +4,8 @@ import '../../../../core/network/api_client.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../process_planner/data/models/process_plan_view_model.dart';
 import '../../../process_planner/presentation/widgets/workflow_graph/workflow_node.dart';
-import '../../../process_planner/presentation/widgets/workflow_graph/horizontal_workflow_graph.dart';
 import '../../../process_planner/presentation/widgets/workflow_graph/workflow_graph_builder.dart';
-import '../../../process_planner/presentation/widgets/node_metrics_dialog.dart';
+import 'strategic_monitor_modal.dart';
 
 /// GM-specific approved process plans view with clickable nodes for strategic monitoring
 /// Shows APPROVED process plans only - nodes are clickable for production insights
@@ -71,61 +70,10 @@ class _GmApprovedProcessPlansViewState extends State<GmApprovedProcessPlansView>
 
     showDialog(
       context: context,
-      builder: (ctx) => Dialog(
-        backgroundColor: Theme.of(ctx).scaffoldBackgroundColor,
-        insetPadding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-              decoration: const BoxDecoration(
-                color: AppTheme.primary,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(8),
-                  topRight: Radius.circular(8),
-                ),
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.analytics_outlined, color: Colors.white, size: 20),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      'Strategic Monitor - Routing #${plan.routingId}',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.close, color: Colors.white),
-                    onPressed: () => Navigator.pop(ctx),
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: ClipRect(
-                child: HorizontalWorkflowGraph(
-                  nodes: nodes,
-                  onNodeTap: (routingId, operationId, operationName) {
-                    showDialog(
-                      context: ctx,
-                      builder: (_) => NodeMetricsDialog(
-                        routingId: routingId,
-                        operationId: operationId,
-                        operationName: operationName,
-                        empId: widget.empId,
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ),
-          ],
-        ),
+      builder: (ctx) => StrategicMonitorModal(
+        empId: widget.empId,
+        nodes: nodes,
+        routingId: plan.routingId,
       ),
     );
   }

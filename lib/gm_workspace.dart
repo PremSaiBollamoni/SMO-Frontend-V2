@@ -9,6 +9,7 @@ import 'profile_tab.dart';
 import 'core/network/api_client.dart';
 import 'features/gm/presentation/widgets/pending_approvals_view.dart';
 import 'features/gm/presentation/widgets/approved_process_plans_view.dart';
+import 'features/gm/presentation/widgets/orders_view.dart';
 
 class GmWorkspace extends StatefulWidget {
   final String empId;
@@ -395,6 +396,10 @@ class _GmWorkspaceState extends State<GmWorkspace> {
     if (acts.contains('PP_VIEW_ALL')) {
       tabItems.add((icon: Icons.warehouse_outlined, label: 'Inventory Analysis', screen: _inventoryTab()));
       tabItems.add((icon: Icons.assessment_outlined, label: 'Reports', screen: _reportsTab()));
+    }
+    // Orders tab - GM only
+    if (acts.contains('PP_APPROVE')) {
+      tabItems.add((icon: Icons.shopping_cart_outlined, label: 'Orders', screen: OrdersView(empId: _empId)));
     }
     if (acts.contains('PP_APPROVE')) {
       tabItems.add((icon: Icons.pending_actions_outlined, label: 'Pending Approvals', screen: PendingApprovalsView(empId: _empId)));
