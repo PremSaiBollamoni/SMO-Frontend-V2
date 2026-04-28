@@ -75,15 +75,19 @@ class QrAssignmentScreen extends StatelessWidget {
                             prefixIcon: Icon(Icons.assignment),
                             hintText: 'Select order to link bin',
                           ),
+                          isExpanded: true,
                           items: [
                             const DropdownMenuItem<String>(
                               value: null,
-                              child: Text('No Order (Unassigned)'),
+                              child: Text('No Order (Unassigned)', overflow: TextOverflow.ellipsis),
                             ),
                             ...controller.activeOrders.map((order) {
                               return DropdownMenuItem<String>(
                                 value: order['order_number'] ?? order['order_id']?.toString(),
-                                child: Text('${order['order_number'] ?? order['order_id']} - Product #${order['product_id']}'),
+                                child: Text(
+                                  '${order['order_number'] ?? order['order_id']} - Product #${order['product_id']}',
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               );
                             }).toList(),
                           ],
@@ -163,10 +167,14 @@ class QrAssignmentScreen extends StatelessWidget {
                             prefixIcon: Icon(Icons.settings),
                             hintText: 'Select next operation',
                           ),
+                          isExpanded: true,
                           items: controller.operations.map((op) {
                             return DropdownMenuItem<String>(
                               value: op['name']?.toString(),
-                              child: Text('${op['name']} (Seq: ${op['sequence']})'),
+                              child: Text(
+                                '${op['name']} (Seq: ${op['sequence']})',
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             );
                           }).toList(),
                           onChanged: (value) {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import '../../data/api/merging_api_service.dart';
 import '../../domain/models/merging_model.dart';
 
@@ -129,22 +130,27 @@ class MergingController extends GetxController {
 
       if (response['success'] == true) {
         // Enhanced success message with details
-        String message = response['message'] ?? 'Tubs merged successfully';
+        String message = 'Tubs Merged Successfully!';
         if (response['totalQuantity'] != null) {
-          message += '\nTotal Quantity: ${response['totalQuantity']}';
+          message += '\n\nTotal Quantity: ${response['totalQuantity']}';
         }
         if (response['qtyTransferred'] != null) {
-          message += '\nQuantity Transferred: ${response['qtyTransferred']}';
+          message += '\nQty Transferred: ${response['qtyTransferred']}';
+        }
+        if (response['freedBinId'] != null) {
+          message += '\n\nSource bin freed for reuse';
         }
 
-        Get.snackbar(
-          'Success',
-          message,
-          snackPosition: SnackPosition.BOTTOM,
+        Fluttertoast.showToast(
+          msg: message,
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 4,
           backgroundColor: Colors.green,
-          colorText: Colors.white,
-          duration: const Duration(seconds: 4),
+          textColor: Colors.white,
+          fontSize: 16.0,
         );
+        
         resetForm();
       } else {
         // Enhanced error handling based on error type
@@ -161,11 +167,11 @@ class MergingController extends GetxController {
           case 'COMPATIBILITY_ERROR':
             backgroundColor = Colors.purple;
             message +=
-                '\nTip: Only bins with same style/size/color can be merged';
+                '\n\nTip: Only bins with same style/size/color can be merged';
             break;
           case 'STATUS_ERROR':
             backgroundColor = Colors.amber;
-            message += '\nTip: Only ACTIVE bins can be merged';
+            message += '\n\nTip: Only ACTIVE bins can be merged';
             break;
           case 'BIN_NOT_FOUND':
             backgroundColor = Colors.red.shade700;
@@ -175,23 +181,25 @@ class MergingController extends GetxController {
             break;
         }
 
-        Get.snackbar(
-          'Merge Failed',
-          message,
-          snackPosition: SnackPosition.BOTTOM,
+        Fluttertoast.showToast(
+          msg: 'Merge Failed\n\n$message',
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 5,
           backgroundColor: backgroundColor,
-          colorText: Colors.white,
-          duration: const Duration(seconds: 5),
+          textColor: Colors.white,
+          fontSize: 16.0,
         );
       }
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to merge tubs: $e',
-        snackPosition: SnackPosition.BOTTOM,
+      Fluttertoast.showToast(
+        msg: 'Failed to merge tubs:\n$e',
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 4,
         backgroundColor: Colors.red,
-        colorText: Colors.white,
-        duration: const Duration(seconds: 4),
+        textColor: Colors.white,
+        fontSize: 16.0,
       );
     } finally {
       isSubmitting.value = false;

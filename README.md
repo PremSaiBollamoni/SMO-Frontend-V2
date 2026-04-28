@@ -117,6 +117,31 @@ SMO Frontend is a modern, feature-rich Flutter application that provides an intu
 - 🏷️ Supervisor assigns bins to orders during QR assignment
 - 📊 Progress calculation from linked bins and WIP data
 
+#### 10. **Enhanced Workflow Progression** ⭐ NEW
+- 🔄 Automatic routing progression through operations
+- 📍 Current operation tracking in bin table
+- ✅ Sequential operation validation
+- 🎯 Last operation detection for workflow completion
+- 📊 Bin status lifecycle management
+- 🔗 WIP tracking with proper FK population
+- ♻️ Bin reusability after merge (FREE status)
+
+#### 11. **QR Event Audit Trail** ⭐ NEW
+- 📝 Complete QR scanning event logging
+- 🔍 Audit trail for compliance and debugging
+- 📊 Event types: ASSIGNMENT, TRACKING, MERGE_SOURCE, MERGE_TARGET
+- 🕒 Timestamp tracking for all QR operations
+- 👤 Operator and supervisor tracking
+- 📈 Historical event analysis capabilities
+
+#### 12. **Toast Notifications** ⭐ NEW
+- 📱 Mobile-friendly toast messages using fluttertoast
+- ✅ Success notifications (green background)
+- ℹ️ Info notifications (blue background)
+- ❌ Error notifications (red background)
+- ⏱️ 4-5 second display duration
+- 📍 Center gravity for better visibility
+
 ---
 
 ## 🖼️ Screenshots

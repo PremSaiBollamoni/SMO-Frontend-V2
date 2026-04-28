@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import '../../data/api/tracking_api_service.dart';
 import '../../domain/models/tracking_model.dart';
 
@@ -18,10 +19,16 @@ class TrackingController extends GetxController {
 
   // Loading states
   var isSubmitting = false.obs;
+  var isLoadingBinInfo = false.obs;
 
   // Flow type tracking
   var lastFlowType = ''.obs;
   var lastResponse = Rx<Map<String, dynamic>?>(null);
+
+  // Current operation tracking
+  var currentOperationId = Rx<int?>(null);
+  var currentOperationName = Rx<String?>(null);
+  var binInfo = Rx<Map<String, dynamic>?>(null);
 
   @override
   void onClose() {
@@ -45,10 +52,41 @@ class TrackingController extends GetxController {
     }
   }
 
-  // Set Tray QR from scanner
-  void setTrayQr(String code) {
+  // Set Tray QR from scanner and fetch bin info
+  void setTrayQr(String code) async {
     if (code.trim().isNotEmpty) {
       trayQrController.text = code.trim();
+      // Auto-fetch bin current operation
+      await fetchBinCurrentOperation(code.trim());
+    }
+  }
+
+  // Fetch bin current operation from backend
+  Future<void> fetchBinCurrentOperation(String trayQr) async {
+    try {
+      isLoadingBinInfo.value = true;
+      currentOperationId.value = null;
+      currentOperationName.value = null;
+      binInfo.value = null;
+
+      final result = await _apiService.getBinCurrentOperation(trayQr);
+
+      if (result['success'] == true) {
+        final data = result['data'] as Map<String, dynamic>;
+        binInfo.value = data;
+
+        if (data['currentOperationId'] != null) {
+          currentOperationId.value = data['currentOperationId'] as int;
+          currentOperationName.value = data['currentOperationName'] as String?;
+        }
+      } else {
+        // Bin not found or no current operation - this is OK for new assignments
+        print('[TRACKING] Bin info: ${result['message']}');
+      }
+    } catch (e) {
+      print('[TRACKING] Error fetching bin info: $e');
+    } finally {
+      isLoadingBinInfo.value = false;
     }
   }
 
@@ -118,6 +156,7 @@ class TrackingController extends GetxController {
         trayQr: trayQrController.text.trim(),
         status: selectedStatus.value!,
         supervisorId: 1004, // Default supervisor ID
+        operationId: currentOperationId.value, // Include current operation ID
       );
 
       final result = await _apiService.submitTracking(tracking);
@@ -141,37 +180,39 @@ class TrackingController extends GetxController {
         } else if (flowType == 'COMPLETION') {
           backgroundColor = Colors.green;
           title = 'Job Completed';
+          
+          // Check if workflow is complete
+          if (responseData['workflowComplete'] == true) {
+            title = 'Workflow Complete!';
+            message = 'All operations finished!\n\n$message';
+          }
         }
 
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (Get.context != null) {
-            Get.snackbar(
-              title,
-              message,
-              snackPosition: SnackPosition.BOTTOM,
-              backgroundColor: backgroundColor,
-              colorText: Colors.white,
-              duration: const Duration(seconds: 4),
-            );
-          }
-        });
+        // Show toast message
+        Fluttertoast.showToast(
+          msg: '$title\n\n$message',
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 4,
+          backgroundColor: backgroundColor,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
 
         resetForm();
       } else {
         throw Exception(result['message'] ?? 'Submission failed');
       }
     } catch (e) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (Get.context != null) {
-          Get.snackbar(
-            'Error',
-            'Failed to submit tracking: $e',
-            snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: Colors.red,
-            colorText: Colors.white,
-          );
-        }
-      });
+      Fluttertoast.showToast(
+        msg: 'Failed to submit tracking:\n$e',
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 4,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
     } finally {
       isSubmitting.value = false;
     }
@@ -184,6 +225,9 @@ class TrackingController extends GetxController {
     employeeQrController.clear();
     trayQrController.clear();
     selectedStatus.value = null;
+    currentOperationId.value = null;
+    currentOperationName.value = null;
+    binInfo.value = null;
   }
 
   // Cancel form

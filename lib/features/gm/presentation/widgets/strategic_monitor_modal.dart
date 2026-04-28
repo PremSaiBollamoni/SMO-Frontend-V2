@@ -326,22 +326,31 @@ class _StrategicMonitorModalState extends State<StrategicMonitorModal> {
                   color: progressColor,
                 ),
               ),
-              Row(
-                children: [
-                  Icon(Icons.calendar_today, size: 14, color: Colors.grey),
-                  const SizedBox(width: 4),
-                  Text(
-                    'Expected: $expectedDate',
-                    style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
-                  ),
-                  const SizedBox(width: 16),
-                  Icon(Icons.timer, size: 14, color: Colors.grey),
-                  const SizedBox(width: 4),
-                  Text(
-                    'Avg: $avgTime',
-                    style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
-                  ),
-                ],
+              Flexible(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.calendar_today, size: 14, color: Colors.grey),
+                    const SizedBox(width: 4),
+                    Flexible(
+                      child: Text(
+                        expectedDate,
+                        style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Icon(Icons.timer, size: 14, color: Colors.grey),
+                    const SizedBox(width: 4),
+                    Flexible(
+                      child: Text(
+                        avgTime,
+                        style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),

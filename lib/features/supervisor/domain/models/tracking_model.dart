@@ -4,6 +4,7 @@ class TrackingModel {
   final String trayQr;
   final String status;
   final int? supervisorId; // Added for tracking who performed the action
+  final int? operationId; // Current operation being completed
 
   TrackingModel({
     required this.machineQr,
@@ -11,6 +12,7 @@ class TrackingModel {
     required this.trayQr,
     required this.status,
     this.supervisorId,
+    this.operationId,
   });
 
   Map<String, dynamic> toJson() {
@@ -26,6 +28,11 @@ class TrackingModel {
       json['supervisorId'] = supervisorId;
     }
 
+    // Only include operationId if it's not null
+    if (operationId != null) {
+      json['operationId'] = operationId;
+    }
+
     return json;
   }
 
@@ -36,6 +43,7 @@ class TrackingModel {
       trayQr: json['trayQr'] ?? '',
       status: json['status'] ?? '',
       supervisorId: json['supervisorId'],
+      operationId: json['operationId'],
     );
   }
 
@@ -45,6 +53,7 @@ class TrackingModel {
     String? trayQr,
     String? status,
     int? supervisorId,
+    int? operationId,
   }) {
     return TrackingModel(
       machineQr: machineQr ?? this.machineQr,
@@ -52,6 +61,7 @@ class TrackingModel {
       trayQr: trayQr ?? this.trayQr,
       status: status ?? this.status,
       supervisorId: supervisorId ?? this.supervisorId,
+      operationId: operationId ?? this.operationId,
     );
   }
 }

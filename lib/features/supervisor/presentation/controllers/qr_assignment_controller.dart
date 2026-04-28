@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import '../../data/api/qr_assignment_api_service.dart';
 import '../../domain/models/qr_assignment_model.dart';
 
@@ -196,37 +197,37 @@ class QrAssignmentController extends GetxController {
         orderNumber: selectedOrderNumber.value, // Include order number
       );
 
+      print('[QR_ASSIGNMENT] Submitting assignment...');
       final response = await _apiService.submitQrAssignment(assignment);
+      print('[QR_ASSIGNMENT] Response received: $response');
 
       if (response['success'] == true) {
+        print('[QR_ASSIGNMENT] Assignment successful!');
         String message =
-            response['message'] ?? 'QR Assignment submitted successfully';
-        if (response['binId'] != null) {
-          message += '\nBin ID: ${response['binId']}';
-        }
+            'QR Assignment Successful!\n\nBin ID: ${response['binId']}\nFirst Operation ID: ${response['currentOperationId']}';
         if (selectedOrderNumber.value != null) {
           message += '\nLinked to Order: ${selectedOrderNumber.value}';
         }
 
-        // Use WidgetsBinding to ensure context is available
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (Get.context != null) {
-            Get.snackbar(
-              'Success',
-              message,
-              snackPosition: SnackPosition.BOTTOM,
-              backgroundColor: Colors.green,
-              colorText: Colors.white,
-              duration: const Duration(seconds: 4),
-            );
-          }
-        });
+        // Reset form first
         resetForm();
+        
+        // Show success toast
+        Fluttertoast.showToast(
+          msg: message,
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 4,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
       } else {
-        String errorType = response['errorType'] ?? 'UNKNOWN_ERROR';
+        print('[QR_ASSIGNMENT] Assignment failed: ${response['message']}');
         String message = response['message'] ?? 'Assignment failed';
-
+        
         Color backgroundColor = Colors.red;
+        String errorType = response['errorType'] ?? 'UNKNOWN_ERROR';
 
         switch (errorType) {
           case 'VALIDATION_ERROR':
@@ -234,42 +235,32 @@ class QrAssignmentController extends GetxController {
             break;
           case 'STATUS_ERROR':
             backgroundColor = Colors.amber;
-            message += '\nTip: Complete current assignment before reassigning';
-            break;
-          case 'SYSTEM_ERROR':
-            backgroundColor = Colors.red.shade700;
-            break;
-          case 'NETWORK_ERROR':
-            backgroundColor = Colors.purple;
+            message += '\n\nTip: Complete current assignment first';
             break;
         }
 
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (Get.context != null) {
-            Get.snackbar(
-              'Assignment Failed',
-              message,
-              snackPosition: SnackPosition.BOTTOM,
-              backgroundColor: backgroundColor,
-              colorText: Colors.white,
-              duration: const Duration(seconds: 5),
-            );
-          }
-        });
+        // Show error toast
+        Fluttertoast.showToast(
+          msg: message,
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 5,
+          backgroundColor: backgroundColor,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
       }
     } catch (e) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (Get.context != null) {
-          Get.snackbar(
-            'Error',
-            'Failed to submit QR assignment: $e',
-            snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: Colors.red,
-            colorText: Colors.white,
-            duration: const Duration(seconds: 4),
-          );
-        }
-      });
+      print('[QR_ASSIGNMENT] Exception: $e');
+      Fluttertoast.showToast(
+        msg: 'Failed to submit QR assignment:\n$e',
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 4,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
     } finally {
       isSubmitting.value = false;
     }
