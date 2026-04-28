@@ -10,6 +10,7 @@ import 'core/network/api_client.dart';
 import 'features/gm/presentation/widgets/pending_approvals_view.dart';
 import 'features/gm/presentation/widgets/approved_process_plans_view.dart';
 import 'features/gm/presentation/widgets/orders_view.dart';
+import 'features/gm/presentation/widgets/master_data_view.dart';
 
 class GmWorkspace extends StatefulWidget {
   final String empId;
@@ -409,6 +410,14 @@ class _GmWorkspaceState extends State<GmWorkspace> {
         icon: Icons.account_tree_outlined,
         label: 'Process Plans',
         screen: GmApprovedProcessPlansView(empId: _empId),
+      ));
+    }
+    // Master Data tab - GM only
+    if (acts.contains('PP_APPROVE') || acts.contains('PP_VIEW_ALL')) {
+      tabItems.add((
+        icon: Icons.storage_outlined,
+        label: 'Master Data',
+        screen: MasterDataView(empId: _empId),
       ));
     }
     // Profile always available

@@ -141,6 +141,22 @@ SMO Frontend is a modern, feature-rich Flutter application that provides an intu
 - ❌ Error notifications (red background)
 - ⏱️ 4-5 second display duration
 - 📍 Center gravity for better visibility
+- 🖥️ Desktop-compatible using ScaffoldMessenger snackbars
+
+#### 13. **Master Data Management System** ⭐ NEW
+- 🎨 Centralized master data management interface
+- 📋 Compact list view with card-based UI
+- **Styles** - Manage garment styles with concept, labels, patterns
+- **GTG (Garment-to-Go)** - Style variants with size, color, sleeve type
+- **Buttons** - Button catalog with codes and names
+- **Labels** - Label inventory (woven, printed, care labels)
+- **Machines** - Machine registry with types and status
+- **Threads** - Thread catalog with color codes
+- ✅ Full CRUD operations for all entities
+- 🔄 Active/Inactive status management
+- 📊 Dropdown population for dependent entities
+- 🎯 Real-time validation and error handling
+- 💾 Automatic data refresh after operations
 
 ---
 
