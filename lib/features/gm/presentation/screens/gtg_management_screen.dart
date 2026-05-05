@@ -159,48 +159,48 @@ class GtgManagementScreen extends StatelessWidget {
               Obx(() => DropdownButtonFormField<int>(
                     value: controller.selectedButtonId.value,
                     decoration: const InputDecoration(
-                      labelText: 'Button',
+                      labelText: 'Button *',
                       border: OutlineInputBorder(),
                     ),
-                    hint: const Text('Select Button (Optional)'),
-                    items: [
-                      const DropdownMenuItem<int>(
-                        value: null,
-                        child: Text('None'),
-                      ),
-                      ...controller.buttons
-                          .map((button) => DropdownMenuItem(
-                                value: button.buttonId,
-                                child: Text(button.buttonName),
-                              ))
-                          .toList(),
-                    ],
+                    hint: const Text('Select Button (Required)'),
+                    items: controller.buttons
+                        .map((button) => DropdownMenuItem(
+                              value: button.buttonId,
+                              child: Text(button.buttonName),
+                            ))
+                        .toList(),
                     onChanged: (value) {
                       controller.selectedButtonId.value = value;
+                    },
+                    validator: (value) {
+                      if (value == null) {
+                        return 'Please select a button';
+                      }
+                      return null;
                     },
                   )),
               const SizedBox(height: 16),
               Obx(() => DropdownButtonFormField<int>(
                     value: controller.selectedThreadId.value,
                     decoration: const InputDecoration(
-                      labelText: 'Thread',
+                      labelText: 'Thread *',
                       border: OutlineInputBorder(),
                     ),
-                    hint: const Text('Select Thread (Optional)'),
-                    items: [
-                      const DropdownMenuItem<int>(
-                        value: null,
-                        child: Text('None'),
-                      ),
-                      ...controller.threads
-                          .map((thread) => DropdownMenuItem(
-                                value: thread.threadId,
-                                child: Text(thread.threadName),
-                              ))
-                          .toList(),
-                    ],
+                    hint: const Text('Select Thread (Required)'),
+                    items: controller.threads
+                        .map((thread) => DropdownMenuItem(
+                              value: thread.threadId,
+                              child: Text(thread.threadName),
+                            ))
+                        .toList(),
                     onChanged: (value) {
                       controller.selectedThreadId.value = value;
+                    },
+                    validator: (value) {
+                      if (value == null) {
+                        return 'Please select a thread';
+                      }
+                      return null;
                     },
                   )),
               const SizedBox(height: 16),
