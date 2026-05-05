@@ -1,6 +1,6 @@
 /// Application configuration constants
 /// Base URL is now dynamically discovered via ServiceDiscoveryService
-const String fallbackBaseUrl = 'http://localhost:8080'; // Fallback only
+const String fallbackBaseUrl = 'https://smobza.thegttech.com/smo'; // Production URL with context path
 const String appVersion = '1.0';
 const String appName = 'SMO System';
 const String appSubtitle = 'Sewing Machine Operations';
