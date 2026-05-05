@@ -102,13 +102,25 @@ class GtgController extends GetxController {
       return;
     }
 
+    // Validate button is selected (MANDATORY)
+    if (selectedButtonId.value == null) {
+      showMessage('Button is required - please select a button', isError: true);
+      return;
+    }
+
+    // Validate thread is selected (MANDATORY)
+    if (selectedThreadId.value == null) {
+      showMessage('Thread is required - please select a thread', isError: true);
+      return;
+    }
+
     try {
       isLoading.value = true;
       final gtg = GtgModel(
         gtgNo: gtgNoController.text.trim(),
         styleId: selectedStyleId.value!,
-        buttonId: selectedButtonId.value,
-        threadId: selectedThreadId.value,
+        buttonId: selectedButtonId.value!,
+        threadId: selectedThreadId.value!,
         size: sizeController.text.trim().isEmpty ? null : sizeController.text.trim(),
         sleeveType: sleeveTypeController.text.trim().isEmpty ? null : sleeveTypeController.text.trim(),
         color: colorController.text.trim().isEmpty ? null : colorController.text.trim(),
@@ -139,14 +151,26 @@ class GtgController extends GetxController {
       return;
     }
 
+    // Validate button is selected (MANDATORY)
+    if (selectedButtonId.value == null) {
+      showMessage('Button is required - please select a button', isError: true);
+      return;
+    }
+
+    // Validate thread is selected (MANDATORY)
+    if (selectedThreadId.value == null) {
+      showMessage('Thread is required - please select a thread', isError: true);
+      return;
+    }
+
     try {
       isLoading.value = true;
       final gtg = GtgModel(
         gtgId: id,
         gtgNo: gtgNoController.text.trim(),
         styleId: selectedStyleId.value!,
-        buttonId: selectedButtonId.value,
-        threadId: selectedThreadId.value,
+        buttonId: selectedButtonId.value!,
+        threadId: selectedThreadId.value!,
         size: sizeController.text.trim().isEmpty ? null : sizeController.text.trim(),
         sleeveType: sleeveTypeController.text.trim().isEmpty ? null : sleeveTypeController.text.trim(),
         color: colorController.text.trim().isEmpty ? null : colorController.text.trim(),
