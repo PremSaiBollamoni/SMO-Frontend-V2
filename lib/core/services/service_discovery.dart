@@ -43,7 +43,14 @@ class ServiceDiscoveryService extends GetxService {
       }
     }
     
-    // Step 2: Try localhost first (most common for development)
+    // Step 2: Try production server first
+    print('[ServiceDiscovery] Trying production server...');
+    if (await _validateBackend('https://smobza.thegttech.com/smo')) {
+      await _cacheUrl('https://smobza.thegttech.com/smo');
+      return 'https://smobza.thegttech.com/smo';
+    }
+    
+    // Step 3: Try localhost (for development)
     print('[ServiceDiscovery] Trying localhost...');
     if (await _validateBackend('http://localhost:8080')) {
       await _cacheUrl('http://localhost:8080');
