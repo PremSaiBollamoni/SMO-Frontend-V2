@@ -55,7 +55,7 @@ class _StrategicMonitorModalState extends State<StrategicMonitorModal> {
   Future<void> _loadApprovedOrders() async {
     try {
       final response = await ApiClient().dio.get(
-        '/api/orders/active',
+        '/api/approved-orders',
         queryParameters: {'actorEmpId': widget.empId},
       );
 
@@ -70,15 +70,19 @@ class _StrategicMonitorModalState extends State<StrategicMonitorModal> {
         });
       }
     } catch (e) {
+      print('[StrategicMonitor] Error loading approved orders: $e');
       setState(() => _isLoading = false);
     }
   }
 
-  Future<void> _loadOrderStatus(String orderNumber) async {
+  Future<void> _loadOrderStatus(dynamic orderId) async {
     try {
       final response = await ApiClient().dio.get(
-        '/api/orders/status/$orderNumber',
-        queryParameters: {'actorEmpId': widget.empId},
+        '/api/order-stats',
+        queryParameters: {
+          'actorEmpId': widget.empId,
+          'orderId': orderId,
+        },
       );
 
       if (response.statusCode == 200 && response.data != null) {
@@ -87,6 +91,7 @@ class _StrategicMonitorModalState extends State<StrategicMonitorModal> {
         });
       }
     } catch (e) {
+      print('[StrategicMonitor] Error loading order status: $e');
       // Handle error silently
     }
   }
@@ -205,7 +210,7 @@ class _StrategicMonitorModalState extends State<StrategicMonitorModal> {
                       return DropdownMenuItem(
                         value: order,
                         child: Text(
-                          '${order['order_id']} (${order['product_name']})',
+                          '${order['order_number']} - ${order['customer_name']}',
                           style: const TextStyle(fontSize: 14),
                         ),
                       );
@@ -221,9 +226,9 @@ class _StrategicMonitorModalState extends State<StrategicMonitorModal> {
   Widget _buildKPISummary() {
     final dark = Theme.of(context).brightness == Brightness.dark;
     final orderId = _orderStatus!['order_id'] ?? 'N/A';
-    final orderQty = _orderStatus!['order_qty'] ?? 0;
-    final completed = _orderStatus!['completed'] ?? 0;
-    final pending = _orderStatus!['pending'] ?? 0;
+    final activeBins = _orderStatus!['active_bins'] ?? 0;
+    final wipQuantity = _orderStatus!['wip_quantity'] ?? 0;
+    final todayOperations = _orderStatus!['today_operations'] ?? 0;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -237,15 +242,15 @@ class _StrategicMonitorModalState extends State<StrategicMonitorModal> {
           ),
           const SizedBox(width: 8),
           Expanded(
-            child: _buildKPICard('Order Qty', orderQty.toString(), dark),
+            child: _buildKPICard('Active Bins', activeBins.toString(), dark),
           ),
           const SizedBox(width: 8),
           Expanded(
-            child: _buildKPICard('Completed', completed.toString(), dark),
+            child: _buildKPICard('WIP Qty', wipQuantity.toString(), dark),
           ),
           const SizedBox(width: 8),
           Expanded(
-            child: _buildKPICard('Pending', pending.toString(), dark),
+            child: _buildKPICard('Today Ops', todayOperations.toString(), dark),
           ),
         ],
       ),
@@ -286,9 +291,18 @@ class _StrategicMonitorModalState extends State<StrategicMonitorModal> {
 
   Widget _buildProgressStrip() {
     final dark = Theme.of(context).brightness == Brightness.dark;
-    final progressPercent = (_orderStatus!['progress_percent'] ?? 0.0) as num;
-    final expectedDate = _orderStatus!['expected_completion_date'] ?? 'N/A';
-    final avgTime = _orderStatus!['avg_time_per_unit'] ?? 'N/A';
+    final todayMerges = _orderStatus!['today_merges'] ?? 0;
+    final activeOperators = _orderStatus!['active_operators'] ?? 0;
+    final activeBins = _orderStatus!['active_bins'] ?? 0;
+    final wipQuantity = _orderStatus!['wip_quantity'] ?? 0;
+
+    // Calculate progress percentage based on WIP
+    double progressPercent = 0.0;
+    if (activeBins > 0) {
+      // Simple progress indicator based on activity
+      progressPercent = (todayMerges + activeOperators) * 5.0;
+      if (progressPercent > 100) progressPercent = 100.0;
+    }
 
     // Determine progress color
     Color progressColor;
@@ -319,7 +333,7 @@ class _StrategicMonitorModalState extends State<StrategicMonitorModal> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Progress: ${progressPercent.toStringAsFixed(1)}%',
+                'Today\'s Activity',
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 14,
@@ -330,21 +344,21 @@ class _StrategicMonitorModalState extends State<StrategicMonitorModal> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.calendar_today, size: 14, color: Colors.grey),
+                    Icon(Icons.merge_type, size: 14, color: Colors.grey),
                     const SizedBox(width: 4),
                     Flexible(
                       child: Text(
-                        expectedDate,
+                        '$todayMerges merges',
                         style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     const SizedBox(width: 8),
-                    Icon(Icons.timer, size: 14, color: Colors.grey),
+                    Icon(Icons.people, size: 14, color: Colors.grey),
                     const SizedBox(width: 4),
                     Flexible(
                       child: Text(
-                        avgTime,
+                        '$activeOperators operators',
                         style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
                         overflow: TextOverflow.ellipsis,
                       ),
