@@ -295,18 +295,37 @@ flutter run -d ios
 
 The app automatically discovers the SMO backend service on your local network. No manual configuration needed!
 
+**Production Configuration:**
+- **Backend URL:** `https://smobza.thegttech.com/smo`
+- **Context Path:** `/smo` (important for Tomcat deployment)
+- **Automatic Discovery:** Enabled with production URL as primary
+
 **Discovery Process:**
-1. **Cached URL** - Checks previously discovered backend
-2. **Localhost** - Tries `http://localhost:8080` (development)
-3. **Current Machine IP** - Scans local network interfaces
-4. **mDNS Discovery** - Uses Bonjour/mDNS for service discovery
-5. **Network Scanning** - Scans local network ranges as fallback
+1. **Production Server** - Tries `https://smobza.thegttech.com/smo` first
+2. **Cached URL** - Checks previously discovered backend
+3. **Localhost** - Tries `http://localhost:8080` (development)
+4. **Current Machine IP** - Scans local network interfaces
+5. **mDNS Discovery** - Uses Bonjour/mDNS for service discovery
+6. **Network Scanning** - Scans local network ranges as fallback
 
 **Supported Networks:**
 - `192.168.x.x` (Class C private)
 - `10.x.x.x` (Class A private)
 - `172.x.x.x` (Class B private)
 - Any other local network
+
+**Production Deployment:**
+```dart
+// lib/core/config/app_config.dart
+const String fallbackBaseUrl = 'https://smobza.thegttech.com/smo';
+
+// lib/core/services/service_discovery.dart
+// Production server is checked first in discoverBackend()
+if (await _validateBackend('https://smobza.thegttech.com/smo')) {
+  await _cacheUrl('https://smobza.thegttech.com/smo');
+  return 'https://smobza.thegttech.com/smo';
+}
+```
 
 **Manual Override (Testing):**
 ```dart
@@ -491,13 +510,39 @@ Surface:     #FFFFFF  // White
 
 ## 🔨 Build & Release
 
+### Production Build (Android APK)
+
+```bash
+# Build release APK
+flutter build apk --release
+
+# APK location:
+# build/app/outputs/flutter-apk/app-release.apk
+
+# Install on device
+adb install build/app/outputs/flutter-apk/app-release.apk
+```
+
+### Production Build (Windows)
+
+```bash
+# Build Windows executable
+flutter build windows --release
+
+# Executable location:
+# build/windows/x64/runner/Release/
+
+# Create installer (optional)
+# Use Inno Setup or NSIS to create installer
+```
+
 ### Build for Production
 
 ```bash
 # Android APK
 flutter build apk --release
 
-# Android App Bundle
+# Android App Bundle (for Play Store)
 flutter build appbundle --release
 
 # iOS
@@ -509,6 +554,21 @@ flutter build windows --release
 # Web
 flutter build web --release
 ```
+
+### Production Deployment Checklist
+
+- [x] Update base URL to production server
+- [x] Update service discovery to check production first
+- [x] Test all endpoints with production backend
+- [x] Verify Strategic Monitor shows order-specific stats
+- [x] Test QR assignment, tracking, and merging workflows
+- [x] Verify master data management CRUD operations
+- [ ] Build and test release APK
+- [ ] Deploy to app store (if applicable)
+- [ ] Create user documentation
+- [ ] Train end users
+
+**Production Status:** ✅ **LIVE** (Deployed May 6, 2026)
 
 ### Build Configurations
 
