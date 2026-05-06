@@ -6,10 +6,36 @@
 ![Dart](https://img.shields.io/badge/Dart-3.0+-0175C2?style=for-the-badge&logo=dart&logoColor=white)
 ![GetX](https://img.shields.io/badge/GetX-State%20Management-8B5CF6?style=for-the-badge&logo=flutter&logoColor=white)
 ![Material Design](https://img.shields.io/badge/Material%20Design-3-757575?style=for-the-badge&logo=material-design&logoColor=white)
+![Version](https://img.shields.io/badge/version-1.0.0-blue?style=for-the-badge)
 
 **Beautiful, responsive cross-platform application for intelligent manufacturing operations**
 
-[Features](#-features) • [Screenshots](#-screenshots) • [Architecture](#-architecture) • [Getting Started](#-getting-started) • [Build](#-build)
+[Features](#-features) • [Screenshots](#-screenshots) • [Architecture](#-architecture) • [Getting Started](#-getting-started) • [Build](#-build) • [Download](#-download-apk)
+
+---
+
+## 📱 Download APK
+
+**Latest Release: v1.0.0 (May 6, 2026)**
+
+[![Download APK](https://img.shields.io/badge/Download-SMO--V1.apk-success?style=for-the-badge&logo=android)](https://github.com/PremSaiBollamoni/SMO-Frontend-V2/raw/main/SMO-V1.apk)
+
+**Direct Download Link:**
+```
+https://github.com/PremSaiBollamoni/SMO-Frontend-V2/raw/main/SMO-V1.apk
+```
+
+**File Size:** 71.52 MB  
+**App Name:** SMO-V1  
+**Min Android:** 5.0 (API 21+)
+
+**Installation:**
+1. Download the APK using the link above
+2. Enable "Install from unknown sources" in Android settings
+3. Install the APK
+4. Launch "SMO-V1" app
+
+**[View Release Notes](RELEASE_NOTES_v1.0.0.md)**
 
 </div>
 
